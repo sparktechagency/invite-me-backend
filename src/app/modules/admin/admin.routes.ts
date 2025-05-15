@@ -10,7 +10,7 @@ const router = Router();
 
 router.post(
     '/create-admin',
-    validateRequest(AdminValidations.registerAdminValidationSchema),
+    validateRequest(AdminValidations.createAdminValidatoinSchema),
     AdminController.createAdmin
 );
 

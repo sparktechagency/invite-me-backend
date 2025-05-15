@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import QueryBuilder from '../../builder/QueryBuilder';
-
 import { User } from '../user/user.model';
 import AppError from '../../error/appError';
 import httpStatus from 'http-status';
@@ -12,8 +11,9 @@ import { TUser } from '../user/user.interface';
 import { USER_ROLE } from '../user/user.constant';
 
 // register Admin
-const createAdmin = async (password: string, adminData: IAdmin) => {
-    const admin = await User.isUserExists(adminData?.email);
+const createAdmin = async (payload: IAdmin & { password: string }) => {
+    const { password, ...adminData } = payload;
+    const admin = await User.findOne({ email: payload.email });
     if (admin) {
         throw new AppError(httpStatus.BAD_REQUEST, 'This admin already exists');
     }
@@ -22,7 +22,7 @@ const createAdmin = async (password: string, adminData: IAdmin) => {
 
     try {
         const userData: Partial<TUser> = {
-            email: adminData?.email,
+            email: payload?.email,
             password: password,
             role: USER_ROLE.admin,
             isActive: true,
@@ -83,47 +83,27 @@ const deleteAdminFromDB = async (id: string) => {
 };
 
 // update Admin status
-const updateAdminStatus = async (id: string, status: string) => {
-    const session = await Admin.startSession();
-    session.startTransaction();
-
-    try {
-        const result = await Admin.findByIdAndUpdate(
-            id,
-            { status: status },
-            { runValidators: true, new: true, session: session }
-        );
-
-        if (!result) {
-            throw new AppError(httpStatus.NOT_FOUND, 'Admin not found');
-        }
-
-        const isActive = status === 'active';
-
-        await User.findOneAndUpdate(
-            { _id: result.user },
-            { isActive: isActive },
-            { runValidators: true, new: true, session: session }
-        );
-
-        await session.commitTransaction();
-        session.endSession();
-
-        return result;
-    } catch (error) {
-        await session.abortTransaction();
-        session.endSession();
-        throw new AppError(
-            httpStatus.SERVICE_UNAVAILABLE,
-            'Something went wrong ,try again letter '
-        );
+const updateAdminStatus = async (id: string) => {
+    const user = await User.findById(id);
+    if (!user) {
+        throw new AppError(httpStatus.NOT_FOUND, 'Admin not found');
     }
+
+    const result = await User.findByIdAndUpdate(
+        id,
+        { isActive: !user.isActive },
+        { new: true, runValidators: true }
+    );
+    return result;
 };
 
 // get all Admin
 
 const getAllAdminFromDB = async (query: Record<string, any>) => {
-    const AdminQuery = new QueryBuilder(Admin.find(), query)
+    const AdminQuery = new QueryBuilder(
+        Admin.find().populate('user', 'isBlocked isActive'),
+        query
+    )
         .search(['storeName'])
         .fields()
         .filter()
