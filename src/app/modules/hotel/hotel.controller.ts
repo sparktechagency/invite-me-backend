@@ -1,24 +1,64 @@
-import httpStatus from "http-status";
-import catchAsync from "../../utilities/catchasync";
-import sendResponse from "../../utilities/sendResponse";
-import hotelServices from "./hotel.service";
+import httpStatus from 'http-status';
+import catchAsync from '../../utilities/catchasync';
+import sendResponse from '../../utilities/sendResponse';
+import HotelService from './hotel.service';
 
-const updateUserProfile = catchAsync(async (req, res) => {
-    const { files } = req;
-    if (files && typeof files === "object" && "profile_image" in files) {
-        req.body.profile_image = files["profile_image"][0].path;
-    }
-    const result = await hotelServices.updateUserProfile(
-        req.user.profileId,
-        req.body
-    );
+const createHotel = catchAsync(async (req, res) => {
+    const result = await HotelService.createHotel(req.body);
     sendResponse(res, {
-        statusCode: httpStatus.OK,
+        statusCode: httpStatus.CREATED,
         success: true,
-        message: "Profile updated successfully",
+        message: 'Hotel created successfully',
         data: result,
     });
 });
 
-const HotelController = { updateUserProfile };
+const getAllHotels = catchAsync(async (req, res) => {
+    const result = await HotelService.getAllHotels(req.query);
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: 'Hotels retrieved successfully',
+        data: result,
+    });
+});
+
+const getSingleHotel = catchAsync(async (req, res) => {
+    const result = await HotelService.getSingleHotel(req.params.id);
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: 'Hotel retrieved successfully',
+        data: result,
+    });
+});
+
+const deleteHotel = catchAsync(async (req, res) => {
+    const result = await HotelService.deleteHotel(req.params.id);
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: 'Hotel deleted successfully',
+        data: result,
+    });
+});
+
+const updateHotel = catchAsync(async (req, res) => {
+    const result = await HotelService.updateHotel(req.params.id, req.body);
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: 'Hotel updated successfully',
+        data: result,
+    });
+});
+
+const HotelController = {
+    createHotel,
+    getAllHotels,
+    getSingleHotel,
+    deleteHotel,
+    updateHotel,
+};
+
 export default HotelController;
