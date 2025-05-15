@@ -8,7 +8,6 @@ import { categoryRoutes } from '../modules/category/category.routes';
 import { bannerRoutes } from '../modules/banner/banner.routes';
 import { metaRoutes } from '../modules/meta/meta.routes';
 import { feedbackRoutes } from '../modules/feedback/feedback.routes';
-import { transactionRoutes } from '../modules/transaction/transaction.routes';
 
 const router = Router();
 
@@ -50,11 +49,6 @@ const moduleRoutes = [
     {
         path: '/feedback',
         router: feedbackRoutes,
-    },
-
-    {
-        path: '/transaction',
-        router: transactionRoutes,
     },
 ];
 
