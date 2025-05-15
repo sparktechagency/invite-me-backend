@@ -17,10 +17,6 @@ const adminSchema = new Schema<IAdmin>(
             required: true,
             unique: true,
         },
-        phoneNumber: {
-            type: String,
-            default: '',
-        },
         profile_image: {
             type: String,
             default: '',

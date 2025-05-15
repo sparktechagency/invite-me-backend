@@ -23,7 +23,6 @@ const createAdmin = async (password: string, adminData: IAdmin) => {
     try {
         const userData: Partial<TUser> = {
             email: adminData?.email,
-            phone: adminData?.phoneNumber,
             password: password,
             role: USER_ROLE.admin,
             isActive: true,
