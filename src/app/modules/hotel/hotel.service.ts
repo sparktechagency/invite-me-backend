@@ -30,6 +30,7 @@ const getSingleHotel = async (id: string) => {
     if (!result) {
         throw new AppError(httpStatus.NOT_FOUND, 'Hotel not found');
     }
+    return result;
 };
 
 const deleteHotel = async (id: string): Promise<IHotel | null> => {

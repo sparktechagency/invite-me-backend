@@ -37,7 +37,7 @@ router.get(
     HotelController.getSingleHotel
 );
 router.delete(
-    '/:id',
+    '/delete/:id',
     auth(USER_ROLE.superAdmin, USER_ROLE.admin),
 
     HotelController.deleteHotel
