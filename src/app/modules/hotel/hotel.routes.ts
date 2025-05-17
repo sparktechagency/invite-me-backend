@@ -11,7 +11,7 @@ const router = express.Router();
 
 router.post(
     '/create',
-    auth(USER_ROLE.superAdmin),
+    auth(USER_ROLE.superAdmin, USER_ROLE.admin),
     uploadFile(),
     (req: Request, res: Response, next: NextFunction) => {
         if (req.body.data) {
@@ -23,12 +23,29 @@ router.post(
     HotelController.createHotel
 );
 
-router.get('/get-all/', HotelController.getAllHotels);
-router.get('/get-single/:id', HotelController.getSingleHotel);
-router.delete('/:id', HotelController.deleteHotel);
+router.get(
+    '/get-all/',
+
+    auth(USER_ROLE.superAdmin, USER_ROLE.admin),
+
+    HotelController.getAllHotels
+);
+router.get(
+    '/get-single/:id',
+    auth(USER_ROLE.superAdmin, USER_ROLE.admin),
+
+    HotelController.getSingleHotel
+);
+router.delete(
+    '/:id',
+    auth(USER_ROLE.superAdmin, USER_ROLE.admin),
+
+    HotelController.deleteHotel
+);
 router.patch(
     '/update/:id',
-    auth(USER_ROLE.superAdmin),
+    auth(USER_ROLE.superAdmin, USER_ROLE.admin),
+
     uploadFile(),
     (req: Request, res: Response, next: NextFunction) => {
         if (req.body.data) {
