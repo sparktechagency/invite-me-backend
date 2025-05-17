@@ -9,6 +9,7 @@ const createAdminValidatoinSchema = z.object({
             .string({ required_error: 'Email is required' })
             .email('Invalid email address'),
         profile_image: z.string().optional(),
+        password: z.string({ required_error: 'Password is required' }),
     }),
 });
 

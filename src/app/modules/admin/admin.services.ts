@@ -14,6 +14,12 @@ import { JwtPayload } from 'jsonwebtoken';
 // register Admin
 const createAdmin = async (payload: IAdmin & { password: string }) => {
     const { password, ...adminData } = payload;
+    // if (password !== confirmPassword) {
+    //     throw new AppError(
+    //         httpStatus.BAD_REQUEST,
+    //         "Password and confirm password doesn't match"
+    //     );
+    // }
     const admin = await User.findOne({ email: payload.email });
     if (admin) {
         throw new AppError(httpStatus.BAD_REQUEST, 'This admin already exists');
