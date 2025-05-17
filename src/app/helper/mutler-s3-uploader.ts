@@ -38,7 +38,7 @@ export const uploadFile = () => {
             'product_image',
             'course_banner',
             'banner',
-            'class_banner',
+            'hotel_image',
         ];
 
         if (file.fieldname === undefined) {
@@ -100,8 +100,8 @@ export const uploadFile = () => {
                 uploadPath = 'uploads/images/player_image';
             } else if (file.fieldname === 'class_banner') {
                 uploadPath = 'uploads/images/class_banner';
-            } else if (file.fieldname === 'course_banner') {
-                uploadPath = 'uploads/images/course_banner';
+            } else if (file.fieldname === 'hotel_image') {
+                uploadPath = 'uploads/images/hotel_image';
             } else if (file.fieldname === 'thumbnail') {
                 uploadPath = 'uploads/images/thumbnail';
             } else {
@@ -143,7 +143,7 @@ export const uploadFile = () => {
         { name: 'video', maxCount: 5 },
         { name: 'chat_videos', maxCount: 2 },
         { name: 'chat_images', maxCount: 7 },
-        { name: 'topic_icon', maxCount: 1 },
+        { name: 'hotel_image', maxCount: 1 },
     ]);
 
     return upload;

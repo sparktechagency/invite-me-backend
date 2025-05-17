@@ -139,6 +139,13 @@ const getAllAdminFromDB = async (query: Record<string, any>) => {
         result,
     };
 };
+const getSingleAdmin = async (id: string) => {
+    const admin = Admin.findById(id).populate('user', 'isBlocked isActive');
+    if (!admin) {
+        throw new AppError(httpStatus.NOT_FOUND, 'Admin not found');
+    }
+    return admin;
+};
 
 const AdminServices = {
     createAdmin,
@@ -146,6 +153,7 @@ const AdminServices = {
     updateAdminStatus,
     getAllAdminFromDB,
     deleteAdminFromDB,
+    getSingleAdmin,
 };
 
 export default AdminServices;

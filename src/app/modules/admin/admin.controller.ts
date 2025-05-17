@@ -65,12 +65,22 @@ const getAllAdmin = catchAsync(async (req, res) => {
         data: result,
     });
 });
+const getSingleAdmin = catchAsync(async (req, res) => {
+    const result = await AdminServices.getSingleAdmin(req?.params.id);
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: 'Admin retrieved successfully',
+        data: result,
+    });
+});
 
 const AdminController = {
     updateAdminProfile,
     createAdmin,
     updateAdminStatus,
     getAllAdmin,
+    getSingleAdmin,
     deleteAdmin,
 };
 

@@ -46,5 +46,10 @@ router.get(
     auth(USER_ROLE.superAdmin),
     AdminController.getAllAdmin
 );
+router.get(
+    '/single-admin/:id',
+    auth(USER_ROLE.superAdmin),
+    AdminController.getSingleAdmin
+);
 
 export const AdminRoutes = router;

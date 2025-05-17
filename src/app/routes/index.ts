@@ -9,6 +9,7 @@ import { bannerRoutes } from '../modules/banner/banner.routes';
 import { metaRoutes } from '../modules/meta/meta.routes';
 import { feedbackRoutes } from '../modules/feedback/feedback.routes';
 import { AdminRoutes } from '../modules/admin/admin.routes';
+import { hotelRoutes } from '../modules/hotel/hotel.routes';
 
 const router = Router();
 
@@ -54,6 +55,10 @@ const moduleRoutes = [
     {
         path: '/admin',
         router: AdminRoutes,
+    },
+    {
+        path: '/hotel',
+        router: hotelRoutes,
     },
 ];
 

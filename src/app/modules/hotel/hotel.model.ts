@@ -15,6 +15,7 @@ const HotelSchema = new Schema<IHotel>(
         wifiIp: {
             type: String,
             required: true,
+            unique: true,
         },
         hotel_image: {
             type: String,

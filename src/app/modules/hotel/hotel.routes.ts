@@ -24,7 +24,7 @@ router.post(
 );
 
 router.get(
-    '/get-all/',
+    '/get-all',
 
     auth(USER_ROLE.superAdmin, USER_ROLE.admin),
 

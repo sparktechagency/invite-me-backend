@@ -1,9 +1,15 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import httpStatus from 'http-status';
 import catchAsync from '../../utilities/catchasync';
 import sendResponse from '../../utilities/sendResponse';
 import HotelService from './hotel.service';
+import { getCloudFrontUrl } from '../../helper/mutler-s3-uploader';
 
 const createHotel = catchAsync(async (req, res) => {
+    const file: any = req.files?.hotel_image;
+    if (req.files?.hotel_image) {
+        req.body.hotel_image = getCloudFrontUrl(file[0].key);
+    }
     const result = await HotelService.createHotel(req.body);
     sendResponse(res, {
         statusCode: httpStatus.CREATED,
@@ -44,6 +50,10 @@ const deleteHotel = catchAsync(async (req, res) => {
 });
 
 const updateHotel = catchAsync(async (req, res) => {
+    const file: any = req.files?.hotel_image;
+    if (req.files?.hotel_image) {
+        req.body.hotel_image = getCloudFrontUrl(file[0].key);
+    }
     const result = await HotelService.updateHotel(req.params.id, req.body);
     sendResponse(res, {
         statusCode: httpStatus.OK,
