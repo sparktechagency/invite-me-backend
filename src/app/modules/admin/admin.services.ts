@@ -9,6 +9,7 @@ import Admin from './admin.model';
 import mongoose from 'mongoose';
 import { TUser } from '../user/user.interface';
 import { USER_ROLE } from '../user/user.constant';
+import { JwtPayload } from 'jsonwebtoken';
 
 // register Admin
 const createAdmin = async (payload: IAdmin & { password: string }) => {
@@ -37,6 +38,11 @@ const createAdmin = async (payload: IAdmin & { password: string }) => {
             user: user[0]._id,
         };
         const admin = await Admin.create([adminPayload], { session });
+        await User.findByIdAndUpdate(
+            user[0]._id,
+            { profileId: admin[0]._id },
+            { session }
+        );
 
         await session.commitTransaction();
         session.endSession();
@@ -49,11 +55,25 @@ const createAdmin = async (payload: IAdmin & { password: string }) => {
     }
 };
 
-const updateAdminProfile = async (userId: string, payload: Partial<IAdmin>) => {
-    const result = await Admin.findOneAndUpdate({ user: userId }, payload, {
+const updateAdminProfile = async (
+    userId: string,
+    userData: JwtPayload,
+    payload: Partial<IAdmin>
+) => {
+    if (userData.role == USER_ROLE.admin && userData.id != userId) {
+        throw new AppError(
+            httpStatus.UNAUTHORIZED,
+            "You don't have permission to update another admin profile"
+        );
+    }
+
+    const result = await Admin.findByIdAndUpdate(userId, payload, {
         new: true,
         runValidators: true,
     });
+    if (payload.email) {
+        await User.findByIdAndUpdate(result?.user, { email: payload.email });
+    }
     return result;
 };
 
@@ -73,7 +93,7 @@ const deleteAdminFromDB = async (id: string) => {
         await Admin.findByIdAndDelete(id).session(session);
 
         await session.commitTransaction();
-        return null;
+        return admin;
     } catch (error) {
         await session.abortTransaction();
         throw error; // re-throw the error for further handling
@@ -84,6 +104,7 @@ const deleteAdminFromDB = async (id: string) => {
 
 // update Admin status
 const updateAdminStatus = async (id: string) => {
+    console.log('id', id);
     const user = await User.findById(id);
     if (!user) {
         throw new AppError(httpStatus.NOT_FOUND, 'Admin not found');
@@ -94,6 +115,7 @@ const updateAdminStatus = async (id: string) => {
         { isActive: !user.isActive },
         { new: true, runValidators: true }
     );
+
     return result;
 };
 

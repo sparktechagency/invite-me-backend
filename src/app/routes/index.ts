@@ -8,6 +8,7 @@ import { categoryRoutes } from '../modules/category/category.routes';
 import { bannerRoutes } from '../modules/banner/banner.routes';
 import { metaRoutes } from '../modules/meta/meta.routes';
 import { feedbackRoutes } from '../modules/feedback/feedback.routes';
+import { AdminRoutes } from '../modules/admin/admin.routes';
 
 const router = Router();
 
@@ -49,6 +50,10 @@ const moduleRoutes = [
     {
         path: '/feedback',
         router: feedbackRoutes,
+    },
+    {
+        path: '/admin',
+        router: AdminRoutes,
     },
 ];
 

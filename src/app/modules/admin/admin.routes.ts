@@ -15,8 +15,8 @@ router.post(
 );
 
 router.patch(
-    '/update-admin-profile',
-    auth(USER_ROLE.admin),
+    '/update-admin/:id',
+    auth(USER_ROLE.admin, USER_ROLE.superAdmin),
     uploadFile(),
     (req: Request, res: Response, next: NextFunction) => {
         if (req.body.data) {
@@ -38,7 +38,7 @@ router.delete(
 router.patch(
     '/update-admin-status/:id',
     auth(USER_ROLE.superAdmin),
-    AdminController.updateShopStatus
+    AdminController.updateAdminStatus
 );
 
 router.get(

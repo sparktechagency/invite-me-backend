@@ -22,7 +22,8 @@ const updateAdminProfile = catchAsync(async (req, res) => {
         req.body.profile_image = getCloudFrontUrl(file[0].key);
     }
     const result = await AdminServices.updateAdminProfile(
-        req?.user?.id,
+        req?.params?.id,
+        req.user,
         req?.body
     );
     sendResponse(res, {
@@ -53,6 +54,8 @@ const updateAdminStatus = catchAsync(async (req, res) => {
         data: result,
     });
 });
+
+//
 const getAllAdmin = catchAsync(async (req, res) => {
     const result = await AdminServices.getAllAdminFromDB(req?.query);
     sendResponse(res, {
@@ -66,7 +69,7 @@ const getAllAdmin = catchAsync(async (req, res) => {
 const AdminController = {
     updateAdminProfile,
     createAdmin,
-    updateShopStatus: updateAdminStatus,
+    updateAdminStatus,
     getAllAdmin,
     deleteAdmin,
 };
