@@ -20,6 +20,7 @@ export interface TUser {
     isDeleted: boolean;
     appleId: string;
     googleId: string;
+    isRegistrationCompleted: boolean;
 }
 
 export interface TLoginUser {

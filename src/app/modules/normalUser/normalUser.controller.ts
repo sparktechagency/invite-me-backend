@@ -16,7 +16,7 @@ const updateUserProfile = catchAsync(async (req, res) => {
         req.body.profile_image = getCloudFrontUrl(file[0].key);
     }
     const result = await NormalUserServices.updateUserProfile(
-        req.user.profileId,
+        req?.user?.profileId,
         req.body
     );
 

@@ -15,32 +15,14 @@ const registerUser = catchAsync(async (req, res) => {
     if (req.files?.profile_image) {
         req.body.profile_image = getCloudFrontUrl(file[0].key);
     }
-    const result = await userServices.registerUser(req.body);
-    sendResponse(res, {
-        statusCode: httpStatus.OK,
-        success: true,
-        message: 'Your registration is successfully completed',
-        data: result,
-    });
-});
-const verifyCode = catchAsync(async (req, res) => {
-    const result = await userServices.verifyCode(
-        req?.body?.email,
-        req?.body?.verifyCode
+    const result = await userServices.registerUser(
+        req.user.profileId,
+        req.body
     );
     sendResponse(res, {
         statusCode: httpStatus.OK,
         success: true,
-        message: 'Successfully verified your account with email',
-        data: result,
-    });
-});
-const resendVerifyCode = catchAsync(async (req, res) => {
-    const result = await userServices.resendVerifyCode(req?.body?.email);
-    sendResponse(res, {
-        statusCode: httpStatus.OK,
-        success: true,
-        message: 'Verify code send to your email inbox',
+        message: 'Your registration is successfully completed',
         data: result,
     });
 });
@@ -81,8 +63,6 @@ const deleteUserAccount = catchAsync(async (req, res) => {
 
 const userController = {
     registerUser,
-    verifyCode,
-    resendVerifyCode,
     getMyProfile,
     changeUserStatus,
     deleteUserAccount,

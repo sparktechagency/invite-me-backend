@@ -5,135 +5,51 @@ import AppError from '../../error/appError';
 import httpStatus from 'http-status';
 import { INormalUser } from '../normalUser/normalUser.interface';
 import mongoose from 'mongoose';
-import { TUser, TUserRole } from './user.interface';
 import { USER_ROLE } from './user.constant';
 import NormalUser from '../normalUser/normalUser.model';
-import registrationSuccessEmailBody from '../../mailTemplate/registerSucessEmail';
 import cron from 'node-cron';
-import sendEmail from '../../utilities/sendEmail';
 import { JwtPayload } from 'jsonwebtoken';
-import { createToken } from './user.utils';
-import config from '../../config';
 import SuperAdmin from '../superAdmin/superAdmin.model';
-const generateVerifyCode = (): number => {
-    return Math.floor(10000 + Math.random() * 900000);
-};
 
-const registerUser = async (payload: INormalUser) => {
+const registerUser = async (userId: string, payload: INormalUser) => {
+    if (payload.checkInDate && payload.checkOutDate) {
+        if (new Date(payload.checkOutDate) <= new Date(payload.checkInDate)) {
+            throw new AppError(
+                httpStatus.BAD_REQUEST,
+                'checkOutDate must be greater than checkInDate'
+            );
+        }
+    }
     const session = await mongoose.startSession();
     session.startTransaction();
     try {
-        const verifyCode = generateVerifyCode();
-        const userDataPayload: Partial<TUser> = {
-            email: payload?.email,
-            role: USER_ROLE.user,
-            verifyCode,
-            codeExpireIn: new Date(Date.now() + 5 * 60000),
-        };
-
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const user = await User.create([userDataPayload], { session });
-
-        const normalUserPayload = {
-            ...payload,
-            user: user[0]._id,
-        };
-        const result = await NormalUser.create([normalUserPayload], {
+        const result = await NormalUser.findByIdAndUpdate(userId, payload, {
+            new: true,
+            runValidators: true,
             session,
         });
+        if (!result) {
+            throw new AppError(
+                httpStatus.SERVICE_UNAVAILABLE,
+                'Failed to registartion , please try again letter'
+            );
+        }
 
         await User.findByIdAndUpdate(
-            user[0]._id,
-            { profileId: result[0]._id },
+            result.user,
+            { isRegistrationCompleted: true },
             { session }
         );
 
         await session.commitTransaction();
         session.endSession();
 
-        return result[0];
+        return result;
     } catch (error) {
         await session.abortTransaction();
         session.endSession();
         throw error;
     }
-};
-
-const verifyCode = async (email: string, verifyCode: number) => {
-    const user = await User.findOne({ email: email });
-    if (!user) {
-        throw new AppError(httpStatus.NOT_FOUND, 'User not found');
-    }
-    if (user.codeExpireIn < new Date(Date.now())) {
-        throw new AppError(httpStatus.BAD_REQUEST, 'Verify code is expired');
-    }
-    if (verifyCode !== user.verifyCode) {
-        throw new AppError(httpStatus.BAD_REQUEST, "Code doesn't match");
-    }
-    const result = await User.findOneAndUpdate(
-        { email: email },
-        { isVerified: true },
-        { new: true, runValidators: true }
-    );
-
-    if (!result) {
-        throw new AppError(
-            httpStatus.SERVICE_UNAVAILABLE,
-            'Server temporary unable please try again letter'
-        );
-    }
-
-    // Create JWT tokens
-    const jwtPayload = {
-        id: result?._id,
-        profileId: result?.profileId,
-        email: result?.email,
-        role: result?.role as TUserRole,
-    };
-
-    const accessToken = createToken(
-        jwtPayload,
-        config.jwt_access_secret as string,
-        config.jwt_access_expires_in as string
-    );
-    const refreshToken = createToken(
-        jwtPayload,
-        config.jwt_refresh_secret as string,
-        config.jwt_refresh_expires_in as string
-    );
-
-    return {
-        accessToken,
-        refreshToken,
-    };
-};
-
-const resendVerifyCode = async (email: string) => {
-    const user = await User.findOne({ email: email });
-    if (!user) {
-        throw new AppError(httpStatus.NOT_FOUND, 'User not found');
-    }
-    const verifyCode = generateVerifyCode();
-    const updateUser = await User.findOneAndUpdate(
-        { email: email },
-        {
-            verifyCode: verifyCode,
-            codeExpireIn: new Date(Date.now() + 5 * 60000),
-        },
-        { new: true, runValidators: true }
-    );
-    if (!updateUser) {
-        throw new AppError(
-            httpStatus.INTERNAL_SERVER_ERROR,
-            'Something went wrong . Please again resend the code after a few second'
-        );
-    }
-    sendEmail({
-        email: user.email,
-        subject: 'Activate Your Account',
-        html: registrationSuccessEmailBody('Dear', updateUser.verifyCode),
-    });
-    return null;
 };
 
 const deleteUserAccount = async (user: JwtPayload, password: string) => {
@@ -214,8 +130,6 @@ const changeUserStatus = async (id: string) => {
 
 const userServices = {
     registerUser,
-    verifyCode,
-    resendVerifyCode,
     getMyProfile,
     changeUserStatus,
     deleteUserAccount,

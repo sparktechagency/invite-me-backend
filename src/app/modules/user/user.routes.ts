@@ -12,6 +12,7 @@ const router = Router();
 
 router.post(
     '/register-user',
+    auth(USER_ROLE.user),
     uploadFile(),
     (req: Request, res: Response, next: NextFunction) => {
         req.body = JSON.parse(req.body.data);
@@ -19,18 +20,6 @@ router.post(
     },
     validateRequest(normalUserValidations.registerNormalUserValidationSchema),
     userControllers.registerUser
-);
-
-router.post(
-    '/verify-code',
-    validateRequest(userValidations.verifyCodeValidationSchema),
-    userControllers.verifyCode
-);
-
-router.post(
-    '/resend-verify-code',
-    validateRequest(userValidations.resendVerifyCodeSchema),
-    userControllers.resendVerifyCode
 );
 
 router.get(

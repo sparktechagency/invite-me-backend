@@ -4,7 +4,11 @@ import { INormalUser } from './normalUser.interface';
 import NormalUser from './normalUser.model';
 import QueryBuilder from '../../builder/QueryBuilder';
 
-const updateUserProfile = async (id: string, payload: Partial<INormalUser>) => {
+const updateUserProfile = async (
+    id: string = '68296b103600d5459722e005',
+    payload: Partial<INormalUser>
+) => {
+    console.log('id', id);
     if (payload.email) {
         throw new AppError(
             httpStatus.BAD_REQUEST,
@@ -36,7 +40,12 @@ const updateUserProfile = async (id: string, payload: Partial<INormalUser>) => {
 };
 
 const getAllUser = async (query: Record<string, unknown>) => {
-    const userQuery = new QueryBuilder(NormalUser.find(), query)
+    const userQuery = new QueryBuilder(
+        NormalUser.find().select(
+            'profile_image name dateOfBirth interests address'
+        ),
+        query
+    )
         .search(['name'])
         .fields()
         .filter()

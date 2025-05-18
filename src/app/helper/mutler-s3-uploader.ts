@@ -36,7 +36,7 @@ export const uploadFile = () => {
             'chat_images',
             'chat_videos',
             'product_image',
-            'course_banner',
+            'pictures',
             'banner',
             'hotel_image',
         ];
@@ -98,8 +98,8 @@ export const uploadFile = () => {
                 uploadPath = 'uploads/images/team_bg_image';
             } else if (file.fieldname === 'player_image') {
                 uploadPath = 'uploads/images/player_image';
-            } else if (file.fieldname === 'class_banner') {
-                uploadPath = 'uploads/images/class_banner';
+            } else if (file.fieldname === 'pictures') {
+                uploadPath = 'uploads/images/pictures';
             } else if (file.fieldname === 'hotel_image') {
                 uploadPath = 'uploads/images/hotel_image';
             } else if (file.fieldname === 'thumbnail') {
@@ -137,7 +137,7 @@ export const uploadFile = () => {
         { name: 'team_logo', maxCount: 1 },
         { name: 'team_bg_image', maxCount: 1 },
         { name: 'class_banner', maxCount: 1 },
-        { name: 'player_bg_image', maxCount: 1 },
+        { name: 'pictures', maxCount: 10 },
         { name: 'banner', maxCount: 1 },
         { name: 'course_banner', maxCount: 1 },
         { name: 'video', maxCount: 5 },
