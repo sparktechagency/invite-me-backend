@@ -12,9 +12,10 @@ export interface INormalUser {
     dateOfBirth: Date;
     address: string;
     interests: string[];
-    language: string;
+    language: string[];
     images: string[];
     checkInDate: Date;
     checkOutDate: Date;
     isRegistrationCompleted: boolean;
+    bio: string;
 }

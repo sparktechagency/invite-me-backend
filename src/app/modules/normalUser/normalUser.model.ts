@@ -13,6 +13,9 @@ const NormalUserSchema = new Schema<INormalUser>(
             type: String,
             required: true,
         },
+        bio: {
+            type: String,
+        },
         email: {
             type: String,
             // required: true,
@@ -43,7 +46,7 @@ const NormalUserSchema = new Schema<INormalUser>(
             type: [String],
         },
         language: {
-            type: String,
+            type: [String],
         },
         checkInDate: {
             type: Date,
