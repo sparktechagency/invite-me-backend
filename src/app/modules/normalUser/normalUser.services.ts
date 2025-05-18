@@ -15,10 +15,23 @@ const updateUserProfile = async (id: string, payload: Partial<INormalUser>) => {
     if (!user) {
         throw new AppError(httpStatus.NOT_FOUND, 'Profile not found');
     }
+
+    if (payload.newPictures) {
+        payload.pictures = [...user.pictures, ...payload.newPictures];
+    } else {
+        payload.pictures = [...user.pictures];
+    }
+    if (payload?.deletedPictures) {
+        payload.pictures = payload.deletedPictures.filter(
+            (url) => !payload?.deletedPictures?.includes(url)
+        );
+    }
+
     const result = await NormalUser.findByIdAndUpdate(id, payload, {
         new: true,
         runValidators: true,
     });
+
     return result;
 };
 

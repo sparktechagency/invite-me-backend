@@ -18,4 +18,6 @@ export interface INormalUser {
     checkOutDate: Date;
     isRegistrationCompleted: boolean;
     bio: string;
+    newPictures: string[];
+    deletedPictures: string[];
 }

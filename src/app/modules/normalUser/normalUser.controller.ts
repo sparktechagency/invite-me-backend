@@ -6,6 +6,11 @@ import NormalUserServices from './normalUser.services';
 import { getCloudFrontUrl } from '../../helper/mutler-s3-uploader';
 
 const updateUserProfile = catchAsync(async (req, res) => {
+    if (req.files?.pictures) {
+        req.body.newPictures = req.files.pictures.map((file: any) => {
+            return getCloudFrontUrl(file.key);
+        });
+    }
     const file: any = req.files?.profile_image;
     if (req.files?.profile_image) {
         req.body.profile_image = getCloudFrontUrl(file[0].key);
@@ -14,6 +19,7 @@ const updateUserProfile = catchAsync(async (req, res) => {
         req.user.profileId,
         req.body
     );
+
     sendResponse(res, {
         statusCode: httpStatus.OK,
         success: true,
