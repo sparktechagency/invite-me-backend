@@ -43,7 +43,7 @@ app.get('/', async (req, res) => {
 
 // global error handler
 app.use(globalErrorHandler);
-// not found
+// not found---------
 app.use(notFound);
 
 export default app;
