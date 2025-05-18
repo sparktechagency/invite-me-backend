@@ -33,8 +33,27 @@ const NormalUserSchema = new Schema<INormalUser>(
         dateOfBirth: {
             type: Date,
         },
-        country: {
+        address: {
             type: String,
+        },
+        interests: {
+            type: [String],
+        },
+        images: {
+            type: [String],
+        },
+        language: {
+            type: String,
+        },
+        checkInDate: {
+            type: Date,
+        },
+        checkOutDate: {
+            type: Date,
+        },
+        isRegistrationCompleted: {
+            type: Boolean,
+            default: false,
         },
     },
     {

@@ -10,5 +10,11 @@ export interface INormalUser {
     profile_image: string;
     gender: (typeof ENUM_GENDER)[keyof typeof ENUM_GENDER];
     dateOfBirth: Date;
-    country: string;
+    address: string;
+    interests: string[];
+    language: string;
+    images: string[];
+    checkInDate: Date;
+    checkOutDate: Date;
+    isRegistrationCompleted: boolean;
 }
