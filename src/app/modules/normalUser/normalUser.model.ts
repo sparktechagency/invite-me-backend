@@ -15,8 +15,9 @@ const NormalUserSchema = new Schema<INormalUser>(
         },
         email: {
             type: String,
-            required: true,
-            unique: true,
+            // required: true,
+            // unique: true,
+            default: '',
         },
         phone: {
             type: String,
