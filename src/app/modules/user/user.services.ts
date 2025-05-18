@@ -11,6 +11,10 @@ import cron from 'node-cron';
 import { JwtPayload } from 'jsonwebtoken';
 import SuperAdmin from '../superAdmin/superAdmin.model';
 
+//TODO: ata kono todo na mojar baper hossa akana thaka jdoi aii 2 ta line remove kora dai tahola multer-s3 kaj korba nah
+import dotenv from 'dotenv';
+dotenv.config();
+
 const registerUser = async (userId: string, payload: INormalUser) => {
     if (payload.checkInDate && payload.checkOutDate) {
         if (new Date(payload.checkOutDate) <= new Date(payload.checkInDate)) {

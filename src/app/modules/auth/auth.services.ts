@@ -505,7 +505,6 @@ const loginWithOAuth = async (
             user = new User({
                 email,
                 [`${provider}Id`]: id,
-                name,
                 profilePic: picture,
                 role,
                 isVerified: true,
@@ -514,12 +513,9 @@ const loginWithOAuth = async (
             await user.save();
 
             const nameParts = name.split(' ');
-            const firstName = nameParts[0];
-            const lastName = nameParts[1] || '';
-
+            const fullName = nameParts[0] + nameParts[1] || ' ';
             const result = await NormalUser.create({
-                firstName,
-                lastName,
+                name: fullName,
                 user: user._id,
                 email,
                 profile_image: picture,

@@ -4,11 +4,7 @@ import { INormalUser } from './normalUser.interface';
 import NormalUser from './normalUser.model';
 import QueryBuilder from '../../builder/QueryBuilder';
 
-const updateUserProfile = async (
-    id: string = '68296b103600d5459722e005',
-    payload: Partial<INormalUser>
-) => {
-    console.log('id', id);
+const updateUserProfile = async (id: string, payload: Partial<INormalUser>) => {
     if (payload.email) {
         throw new AppError(
             httpStatus.BAD_REQUEST,
@@ -26,7 +22,7 @@ const updateUserProfile = async (
         payload.pictures = [...user.pictures];
     }
     if (payload?.deletedPictures) {
-        payload.pictures = payload.deletedPictures.filter(
+        payload.pictures = payload.pictures.filter(
             (url) => !payload?.deletedPictures?.includes(url)
         );
     }

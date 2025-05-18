@@ -11,6 +11,8 @@ import router from './app/routes';
 import notFound from './app/middlewares/notFound';
 const app: Application = express();
 import sendContactUsEmail from './app/helper/sendContactUsEmail';
+import dotenv from 'dotenv';
+dotenv.config();
 
 // parser
 app.use(express.json());
