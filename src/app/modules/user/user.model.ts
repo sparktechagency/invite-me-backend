@@ -15,13 +15,6 @@ const userSchema = new Schema<TUser>(
             // unique: true,
             default: '',
         },
-        password: {
-            type: String,
-            required: true,
-        },
-        passwordChangedAt: {
-            type: Date,
-        },
         role: {
             type: String,
             enum: ['user', 'superAdmin', 'admin'],

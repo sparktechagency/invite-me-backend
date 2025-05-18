@@ -13,7 +13,7 @@ export interface INormalUser {
     address: string;
     interests: string[];
     language: string[];
-    images: string[];
+    pictures: string[];
     checkInDate: Date;
     checkOutDate: Date;
     isRegistrationCompleted: boolean;

@@ -19,29 +19,13 @@ const generateVerifyCode = (): number => {
     return Math.floor(10000 + Math.random() * 900000);
 };
 
-const registerUser = async (
-    payload: INormalUser & { password: string; confirmPassword: string }
-) => {
-    const { password, confirmPassword, ...userData } = payload;
-    if (password !== confirmPassword) {
-        throw new AppError(
-            httpStatus.BAD_REQUEST,
-            "Password and confirm password doesn't match"
-        );
-    }
-
-    const emailExist = await User.findOne({ email: userData.email });
-    if (emailExist) {
-        throw new AppError(httpStatus.BAD_REQUEST, 'This email already exist');
-    }
+const registerUser = async (payload: INormalUser) => {
     const session = await mongoose.startSession();
     session.startTransaction();
-
     try {
         const verifyCode = generateVerifyCode();
         const userDataPayload: Partial<TUser> = {
-            email: userData?.email,
-            password: password,
+            email: payload?.email,
             role: USER_ROLE.user,
             verifyCode,
             codeExpireIn: new Date(Date.now() + 5 * 60000),
@@ -51,7 +35,7 @@ const registerUser = async (
         const user = await User.create([userDataPayload], { session });
 
         const normalUserPayload = {
-            ...userData,
+            ...payload,
             user: user[0]._id,
         };
         const result = await NormalUser.create([normalUserPayload], {
@@ -63,15 +47,6 @@ const registerUser = async (
             { profileId: result[0]._id },
             { session }
         );
-
-        sendEmail({
-            email: userData.email,
-            subject: 'Activate Your Account',
-            html: registrationSuccessEmailBody(
-                result[0].name,
-                user[0].verifyCode
-            ),
-        });
 
         await session.commitTransaction();
         session.endSession();

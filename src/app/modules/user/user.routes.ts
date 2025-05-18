@@ -5,12 +5,19 @@ import userValidations from './user.validation';
 import normalUserValidations from '../normalUser/normalUser.validation';
 import auth from '../../middlewares/auth';
 import { USER_ROLE } from './user.constant';
+import { Request, Response, NextFunction } from 'express';
+import { uploadFile } from '../../helper/mutler-s3-uploader';
 
 const router = Router();
 
 router.post(
     '/register-user',
-    validateRequest(normalUserValidations.createNormalUserSchema),
+    uploadFile(),
+    (req: Request, res: Response, next: NextFunction) => {
+        req.body = JSON.parse(req.body.data);
+        next();
+    },
+    validateRequest(normalUserValidations.registerNormalUserValidationSchema),
     userControllers.registerUser
 );
 

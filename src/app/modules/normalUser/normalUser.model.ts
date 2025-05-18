@@ -42,7 +42,7 @@ const NormalUserSchema = new Schema<INormalUser>(
         interests: {
             type: [String],
         },
-        images: {
+        pictures: {
             type: [String],
         },
         language: {
