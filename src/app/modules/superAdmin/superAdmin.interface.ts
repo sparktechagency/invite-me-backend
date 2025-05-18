@@ -5,4 +5,5 @@ export interface ISuperAdmin {
     name: string;
     email: string;
     profile_image: string;
+    phone: string;
 }

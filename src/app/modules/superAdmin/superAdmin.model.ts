@@ -21,6 +21,9 @@ const superAdminSchema = new Schema<ISuperAdmin>(
             type: String,
             default: '',
         },
+        phone: {
+            type: String,
+        },
     },
     {
         timestamps: true,

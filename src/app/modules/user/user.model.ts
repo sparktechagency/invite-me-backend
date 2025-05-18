@@ -2,6 +2,7 @@ import { Schema, model } from 'mongoose';
 import { TUser, UserModel } from './user.interface';
 // import config from '../../config';
 import bcrypt from 'bcrypt';
+import config from '../../config';
 
 const userSchema = new Schema<TUser>(
     {
@@ -14,6 +15,9 @@ const userSchema = new Schema<TUser>(
             // required: true,
             // unique: true,
             default: '',
+        },
+        password: {
+            type: String,
         },
         role: {
             type: String,
@@ -55,6 +59,9 @@ const userSchema = new Schema<TUser>(
         googleId: {
             type: String,
         },
+        passwordChangedAt: {
+            type: Date,
+        },
         isRegistrationCompleted: {
             type: Boolean,
             default: false,
@@ -90,6 +97,17 @@ userSchema.statics.isPasswordMatched = async function (
 ) {
     return await bcrypt.compare(plainPasswords, hashPassword);
 };
+userSchema.pre('save', async function (next) {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    const user = this;
+    if (user.password) {
+        user.password = await bcrypt.hash(
+            user.password,
+            Number(config.bcrypt_salt_rounds)
+        );
+    }
+    next();
+});
 
 userSchema.statics.isJWTIssuedBeforePasswordChange = async function (
     passwordChangeTimeStamp,

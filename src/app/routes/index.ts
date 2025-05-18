@@ -10,6 +10,7 @@ import { metaRoutes } from '../modules/meta/meta.routes';
 import { feedbackRoutes } from '../modules/feedback/feedback.routes';
 import { AdminRoutes } from '../modules/admin/admin.routes';
 import { hotelRoutes } from '../modules/hotel/hotel.routes';
+import { superAdminRoutes } from '../modules/superAdmin/superAdmin.routes';
 
 const router = Router();
 
@@ -59,6 +60,10 @@ const moduleRoutes = [
     {
         path: '/hotel',
         router: hotelRoutes,
+    },
+    {
+        path: '/super-admin',
+        router: superAdminRoutes,
     },
 ];
 

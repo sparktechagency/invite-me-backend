@@ -75,9 +75,9 @@ const deleteUserAccount = async (user: JwtPayload, password: string) => {
 const getMyProfile = async (userData: JwtPayload) => {
     let result = null;
     if (userData.role === USER_ROLE.user) {
-        result = await NormalUser.findOne({ email: userData.email });
+        result = await NormalUser.findById(userData.profileId);
     } else if (userData.role === USER_ROLE.superAdmin) {
-        result = await SuperAdmin.findOne({ email: userData.email });
+        result = await SuperAdmin.findById(userData.profileId);
     }
     return result;
 };

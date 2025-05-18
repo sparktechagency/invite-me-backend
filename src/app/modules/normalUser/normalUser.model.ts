@@ -54,10 +54,6 @@ const NormalUserSchema = new Schema<INormalUser>(
         checkOutDate: {
             type: Date,
         },
-        isRegistrationCompleted: {
-            type: Boolean,
-            default: false,
-        },
     },
     {
         timestamps: true,
