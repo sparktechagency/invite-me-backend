@@ -4,6 +4,8 @@ import { INormalUser } from './normalUser.interface';
 import NormalUser from './normalUser.model';
 import QueryBuilder from '../../builder/QueryBuilder';
 import mongoose from 'mongoose';
+import { JwtPayload } from 'jsonwebtoken';
+import { USER_ROLE } from '../user/user.constant';
 
 const updateUserProfile = async (id: string, payload: Partial<INormalUser>) => {
     if (payload.email) {
@@ -36,25 +38,35 @@ const updateUserProfile = async (id: string, payload: Partial<INormalUser>) => {
     return result;
 };
 
-const getAllUser = async (query: Record<string, unknown>) => {
-    const userQuery = new QueryBuilder(
-        NormalUser.find().select(
-            'profile_image name dateOfBirth interests address'
-        ),
-        query
-    )
-        .search(['name'])
-        .fields()
-        .filter()
-        .paginate()
-        .sort();
+const getAllUser = async (
+    userData: JwtPayload,
+    query: Record<string, unknown>
+) => {
+    if (
+        userData.role == USER_ROLE.superAdmin ||
+        userData.role == USER_ROLE.admin
+    ) {
+        const userQuery = new QueryBuilder(
+            NormalUser.find().select(
+                'profile_image name dateOfBirth interests address'
+            ),
+            query
+        )
+            .search(['name'])
+            .fields()
+            .filter()
+            .paginate()
+            .sort();
 
-    const result = await userQuery.modelQuery;
-    const meta = await userQuery.countTotal();
-    return {
-        meta,
-        result,
-    };
+        const result = await userQuery.modelQuery;
+        const meta = await userQuery.countTotal();
+        return {
+            meta,
+            result,
+        };
+    } else {
+        return null;
+    }
 };
 
 // get single user
