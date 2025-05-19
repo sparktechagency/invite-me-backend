@@ -10,7 +10,7 @@ const handleChat = async (
     socket: Socket,
     currentUserId: string
 ): Promise<void> => {
-    // new message -----------------------------------
+    // new message -----------------------
     socket.on('new-message', async (data) => {
         if (!data.receiver) {
             emitError(socket, {
