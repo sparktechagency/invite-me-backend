@@ -47,9 +47,14 @@ const getAllUser = async (
         userData.role == USER_ROLE.admin
     ) {
         const userQuery = new QueryBuilder(
-            NormalUser.find().select(
-                'profile_image name dateOfBirth interests address'
-            ),
+            NormalUser.find({ isRegistrationCompleted: true })
+                .select(
+                    'name user email address checkInDate checkOutDate gender'
+                )
+                .populate({
+                    path: 'user',
+                    select: 'isBlocked',
+                }),
             query
         )
             .search(['name'])

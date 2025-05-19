@@ -13,6 +13,7 @@ import SuperAdmin from '../superAdmin/superAdmin.model';
 
 //TODO: ata kono todo na mojar baper hossa akana thaka jdoi aii 2 ta line remove kora dai tahola multer-s3 kaj korba nah
 import dotenv from 'dotenv';
+import Admin from '../admin/admin.model';
 dotenv.config();
 
 const registerUser = async (userId: string, payload: INormalUser) => {
@@ -27,11 +28,15 @@ const registerUser = async (userId: string, payload: INormalUser) => {
     const session = await mongoose.startSession();
     session.startTransaction();
     try {
-        const result = await NormalUser.findByIdAndUpdate(userId, payload, {
-            new: true,
-            runValidators: true,
-            session,
-        });
+        const result = await NormalUser.findByIdAndUpdate(
+            userId,
+            { ...payload, isRegistrationCompleted: true },
+            {
+                new: true,
+                runValidators: true,
+                session,
+            }
+        );
         if (!result) {
             throw new AppError(
                 httpStatus.SERVICE_UNAVAILABLE,
@@ -78,6 +83,8 @@ const getMyProfile = async (userData: JwtPayload) => {
         result = await NormalUser.findById(userData.profileId);
     } else if (userData.role === USER_ROLE.superAdmin) {
         result = await SuperAdmin.findById(userData.profileId);
+    } else if (userData.role === USER_ROLE.admin) {
+        result = await Admin.findById(userData.profileId);
     }
     return result;
 };

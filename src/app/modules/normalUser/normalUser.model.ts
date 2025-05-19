@@ -69,6 +69,10 @@ const NormalUserSchema = new Schema<INormalUser>(
             ref: 'NormalUser',
             default: [],
         },
+        isRegistrationCompleted: {
+            type: Boolean,
+            default: false,
+        },
     },
     {
         timestamps: true,
