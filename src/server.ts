@@ -6,7 +6,7 @@ import server from './app';
 import { errorLogger, logger } from './app/shared/logger';
 import config from './app/config';
 import seedSuperAdmin from './app/DB';
-import { initializeSocket } from './app/socket/socket';
+import { initializeSocket } from './app/socket/socketManager';
 
 let myServer: HTTPServer | undefined;
 

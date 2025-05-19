@@ -1,6 +1,6 @@
 import { INotification } from '../modules/notification/notification.interface';
 import Notification from '../modules/notification/notification.model';
-import { getIO } from '../socket/socket';
+import { getIO } from '../socket/socketManager';
 import getUserNotificationCount from './getUserNotificationCount';
 
 const sendNotification = async (notificationData: INotification) => {

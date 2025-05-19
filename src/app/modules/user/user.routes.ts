@@ -47,4 +47,6 @@ router.get(
     userControllers.getMyProfile
 );
 
+
+
 export const userRoutes = router;

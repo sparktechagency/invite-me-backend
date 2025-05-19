@@ -21,7 +21,6 @@ router.patch(
     validateRequest(normalUserValidations.updateNormalUserValidationSchema),
     NormalUserController.updateUserProfile
 );
-
 router.get(
     '/get-all-user',
     auth(USER_ROLE.superAdmin),
@@ -44,7 +43,6 @@ router.patch(
     auth(USER_ROLE.user),
     NormalUserController.acceptRejectConnectionRequest
 );
-
 router.patch(
     '/block-unblock-user/:id',
     auth(USER_ROLE.user),
