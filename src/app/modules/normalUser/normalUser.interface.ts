@@ -22,4 +22,5 @@ export interface INormalUser {
     deletedPictures: string[];
     connections: [Types.ObjectId];
     connectionRequests: [Types.ObjectId];
+    blockedUsers: [Types.ObjectId];
 }

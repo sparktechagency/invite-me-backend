@@ -85,6 +85,22 @@ const acceptRejectConnectionRequest = catchAsync(async (req, res) => {
         data: result,
     });
 });
+const blockUnblockUser = catchAsync(async (req, res) => {
+    const result = await NormalUserServices.blockUnblockUser(
+        req.user.profileId,
+        req.params.id
+    );
+
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message:
+            result == 1
+                ? 'User blocked successfully'
+                : 'User unblocked successfully',
+        data: result,
+    });
+});
 
 const NormalUserController = {
     updateUserProfile,
@@ -92,6 +108,7 @@ const NormalUserController = {
     getSingleUser,
     connectionAddRemove,
     acceptRejectConnectionRequest,
+    blockUnblockUser,
 };
 
 export default NormalUserController;

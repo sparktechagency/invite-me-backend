@@ -78,7 +78,7 @@ const connectionAddRemove = async (ownId: string, id: string) => {
         return 2;
     } else if (user?.connectionRequests?.includes(profileId)) {
         await NormalUser.findByIdAndUpdate(id, {
-            $pull: { connections: profileId },
+            $pull: { connectionRequests: profileId },
         });
         return 3;
     } else {
@@ -105,15 +105,15 @@ const acceptRejectConnectionRequest = async (
     }
     if (status == 'accept') {
         const result = await NormalUser.findByIdAndUpdate(profileId, {
-            $addToSet: { connections: profileId },
+            $addToSet: { connections: userId },
         });
         await NormalUser.findByIdAndUpdate(profileId, {
-            $pull: { connectionRequest: profileId },
+            $pull: { connectionRequest: userId },
         });
         return result;
     } else if (status == 'reject') {
         const result = await NormalUser.findByIdAndUpdate(profileId, {
-            $pull: { connectionRequest: profileId },
+            $pull: { connectionRequest: userId },
         });
         return result;
     } else {
@@ -124,12 +124,36 @@ const acceptRejectConnectionRequest = async (
     }
 };
 
+const blockUnblockUser = async (ownId: string, id: string) => {
+    const profileId = new mongoose.Types.ObjectId(ownId);
+    const userId = new mongoose.Types.ObjectId(id);
+    const me = await NormalUser.findById(profileId);
+    if (!me) {
+        throw new AppError(
+            httpStatus.NOT_FOUND,
+            'Your profile not found , plase try to login again'
+        );
+    }
+    if (!me.blockedUsers.includes(userId)) {
+        await NormalUser.findByIdAndUpdate(profileId, {
+            $addToSet: { blockedUsers: userId },
+        });
+        return 1;
+    } else {
+        await NormalUser.findByIdAndUpdate(profileId, {
+            $pull: { blockedUsers: userId },
+        });
+        return 0;
+    }
+};
+
 const NormalUserServices = {
     updateUserProfile,
     getAllUser,
     getSingleUser,
     connectionAddRemove,
     acceptRejectConnectionRequest,
+    blockUnblockUser,
 };
 
 export default NormalUserServices;

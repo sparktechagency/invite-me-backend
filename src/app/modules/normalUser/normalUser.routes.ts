@@ -44,4 +44,11 @@ router.patch(
     auth(USER_ROLE.user),
     NormalUserController.acceptRejectConnectionRequest
 );
+
+router.patch(
+    '/block-unblock-user/:id',
+    auth(USER_ROLE.user),
+    NormalUserController.blockUnblockUser
+);
+
 export const normalUserRoutes = router;

@@ -56,12 +56,17 @@ const NormalUserSchema = new Schema<INormalUser>(
         },
         connections: {
             type: [Schema.Types.ObjectId],
-            ref: 'Normal User',
+            ref: 'NormalUser',
             default: [],
         },
         connectionRequests: {
             type: [Schema.Types.ObjectId],
-            ref: 'Normal User',
+            ref: 'NormalUser',
+            default: [],
+        },
+        blockedUsers: {
+            type: [Schema.Types.ObjectId],
+            ref: 'NormalUser',
             default: [],
         },
     },
