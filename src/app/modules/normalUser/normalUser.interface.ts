@@ -20,4 +20,6 @@ export interface INormalUser {
     bio: string;
     newPictures: string[];
     deletedPictures: string[];
+    connections: [Types.ObjectId];
+    connectionRequests: [Types.ObjectId];
 }

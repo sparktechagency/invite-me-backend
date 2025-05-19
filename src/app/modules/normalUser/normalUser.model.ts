@@ -54,6 +54,16 @@ const NormalUserSchema = new Schema<INormalUser>(
         checkOutDate: {
             type: Date,
         },
+        connections: {
+            type: [Schema.Types.ObjectId],
+            ref: 'Normal User',
+            default: [],
+        },
+        connectionRequests: {
+            type: [Schema.Types.ObjectId],
+            ref: 'Normal User',
+            default: [],
+        },
     },
     {
         timestamps: true,

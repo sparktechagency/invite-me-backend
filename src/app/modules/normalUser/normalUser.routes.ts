@@ -34,4 +34,14 @@ router.get(
     NormalUserController.getSingleUser
 );
 
+router.patch(
+    '/add-remove-connection/:id',
+    auth(USER_ROLE.user),
+    NormalUserController.connectionAddRemove
+);
+router.patch(
+    '/accpet-reject-connection-request/:id',
+    auth(USER_ROLE.user),
+    NormalUserController.acceptRejectConnectionRequest
+);
 export const normalUserRoutes = router;
