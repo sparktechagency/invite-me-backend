@@ -88,7 +88,7 @@ const connectionAddRemove = async (ownId: string, id: string) => {
         return 1;
     }
 };
-
+// accept reject
 const acceptRejectConnectionRequest = async (
     ownId: string,
     id: string,
