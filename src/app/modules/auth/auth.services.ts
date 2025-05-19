@@ -19,8 +19,9 @@ const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 const GOOGLE_CLIENT_IDS = (process.env.GOOGLE_CLIENT_IDS || '').split(',');
 import axios from 'axios';
 const generateVerifyCode = (): number => {
-    return Math.floor(10000 + Math.random() * 900000);
+    return Math.floor(100000 + Math.random() * 900000);
 };
+
 const loginUserIntoDB = async (payload: TLoginUser) => {
     const user = await User.findOne({ email: payload.email });
     if (!user) {
@@ -340,6 +341,7 @@ const resetPassword = async (payload: {
         },
         {
             password: newHashedPassword,
+            isResetVerified: false,
             passwordChangedAt: new Date(),
         }
     );
