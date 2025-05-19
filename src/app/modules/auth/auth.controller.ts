@@ -3,9 +3,17 @@ import catchAsync from '../../utilities/catchasync';
 import sendResponse from '../../utilities/sendResponse';
 import authServices from './auth.services';
 import AppError from '../../error/appError';
+import config from '../../config';
 
 const loginUser = catchAsync(async (req, res) => {
     const result = await authServices.loginUserIntoDB(req.body);
+    const { refreshToken } = result;
+    res.cookie('refreshToken', refreshToken, {
+        secure: config.NODE_ENV === 'production',
+        httpOnly: true,
+        sameSite: 'none',
+        maxAge: 1000 * 60 * 60 * 24 * 265,
+    });
     sendResponse(res, {
         statusCode: httpStatus.OK,
         success: true,
