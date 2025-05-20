@@ -5,6 +5,7 @@ import NormalUser from './normalUser.model';
 import mongoose from 'mongoose';
 import { JwtPayload } from 'jsonwebtoken';
 import { USER_ROLE } from '../user/user.constant';
+import QueryBuilder from '../../builder/QueryBuilder';
 
 const updateUserProfile = async (id: string, payload: Partial<INormalUser>) => {
     if (payload.email) {
@@ -45,6 +46,29 @@ const getAllUser = async (
         userData.role == USER_ROLE.superAdmin ||
         userData.role == USER_ROLE.admin
     ) {
+        const userQuery = new QueryBuilder(
+            NormalUser.find({ isRegistrationCompleted: true })
+                .select(
+                    'name user email address checkInDate checkOutDate gender'
+                )
+                .populate({
+                    path: 'user',
+                    select: 'isBlocked',
+                }),
+            query
+        )
+            .search(['name'])
+            .fields()
+            .filter()
+            .paginate()
+            .sort();
+        const result = await userQuery.modelQuery;
+        const meta = await userQuery.countTotal();
+        return {
+            meta,
+            result,
+        };
+    } else {
         // const userQuery = new QueryBuilder(
         //     NormalUser.find({ isRegistrationCompleted: true })
         //         .select(
@@ -67,7 +91,6 @@ const getAllUser = async (
         //     meta,
         //     result,
         // };
-    } else {
         return null;
     }
 };

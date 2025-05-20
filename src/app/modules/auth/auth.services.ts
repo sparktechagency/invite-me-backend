@@ -16,7 +16,7 @@ import NormalUser from '../normalUser/normalUser.model';
 import appleSigninAuth from 'apple-signin-auth';
 import { OAuth2Client } from 'google-auth-library';
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
-const GOOGLE_CLIENT_IDS = (process.env.GOOGLE_CLIENT_IDS || '').split(',');
+// const GOOGLE_CLIENT_IDS = (process.env.GOOGLE_CLIENT_IDS || '').split(',');
 import axios from 'axios';
 const generateVerifyCode = (): number => {
     return Math.floor(100000 + Math.random() * 900000);
@@ -443,7 +443,8 @@ const loginWithOAuth = async (
                 const ticket = await googleClient.verifyIdToken({
                     idToken: token,
                     // audience: process.env.GOOGLE_CLIENT_ID,
-                    audience: GOOGLE_CLIENT_IDS,
+                    // audience: GOOGLE_CLIENT_IDS,
+                    audience: process.env.IOS_CLIENT_ID,
                 });
 
                 const payload = ticket.getPayload();
@@ -572,7 +573,6 @@ const loginWithOAuth = async (
             config.jwt_refresh_secret as string,
             config.jwt_refresh_expires_in as string
         );
-
         return { accessToken, refreshToken };
     } catch (error: any) {
         console.error('OAuth login error:', error);

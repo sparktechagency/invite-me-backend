@@ -40,10 +40,23 @@ const getAllConnectionRequest = catchAsync(async (req, res) => {
         data: result,
     });
 });
+const getMyConnections = catchAsync(async (req, res) => {
+    const result = await connectionServices.getMyConnections(
+        req.user.profileId,
+        req.query
+    );
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: 'Connection  retrieved successfully',
+        data: result,
+    });
+});
 
 const ConnectionController = {
     addRemoveConnection,
     accpetRejectConnectionRequest,
     getAllConnectionRequest,
+    getMyConnections,
 };
 export default ConnectionController;

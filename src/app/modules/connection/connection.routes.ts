@@ -20,5 +20,10 @@ router.get(
     auth(USER_ROLE.user),
     connectionController.getAllConnectionRequest
 );
+router.get(
+    '/my-connections',
+    auth(USER_ROLE.user),
+    connectionController.getMyConnections
+);
 
 export const connectionRoutes = router;
