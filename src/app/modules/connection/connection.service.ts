@@ -3,6 +3,7 @@ import AppError from '../../error/appError';
 import Connection from './connection.model';
 import { ENUM_CONNECTION_STATUS } from './connection.enum';
 import QueryBuilder from '../../builder/QueryBuilder';
+// type
 type AcceptRejectStatus =
     | typeof ENUM_CONNECTION_STATUS.ACCEPTED
     | typeof ENUM_CONNECTION_STATUS.REJECTED;
