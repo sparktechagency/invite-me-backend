@@ -3,7 +3,6 @@ import httpStatus from 'http-status';
 import catchAsync from '../../utilities/catchasync';
 import sendResponse from '../../utilities/sendResponse';
 import AdminServices from './admin.services';
-import { getCloudFrontUrl } from '../../helper/mutler-s3-uploader';
 
 // register Admin
 const createAdmin = catchAsync(async (req, res) => {
@@ -17,13 +16,8 @@ const createAdmin = catchAsync(async (req, res) => {
 });
 
 const updateAdminProfile = catchAsync(async (req, res) => {
-    const file: any = req.files?.profile_image;
-    if (req.files?.profile_image) {
-        req.body.profile_image = getCloudFrontUrl(file[0].key);
-    }
     const result = await AdminServices.updateAdminProfile(
         req?.params?.id,
-        req.user,
         req?.body
     );
     sendResponse(res, {

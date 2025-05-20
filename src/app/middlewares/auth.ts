@@ -69,7 +69,7 @@ const auth = (...requiredRoles: TUserRole[]) => {
             if (user?.passwordChangedAt && iat) {
                 const passwordChangeTime =
                     new Date(user?.passwordChangedAt).getTime() / 1000;
-                if (passwordChangeTime > iat) {
+                if (passwordChangeTime > iat + 1) {
                     throw new AppError(
                         httpStatus.FORBIDDEN,
                         'You are not authorized 2'

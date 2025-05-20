@@ -2,7 +2,6 @@ import httpStatus from 'http-status';
 import AppError from '../../error/appError';
 import { INormalUser } from './normalUser.interface';
 import NormalUser from './normalUser.model';
-import QueryBuilder from '../../builder/QueryBuilder';
 import mongoose from 'mongoose';
 import { JwtPayload } from 'jsonwebtoken';
 import { USER_ROLE } from '../user/user.constant';
@@ -46,29 +45,28 @@ const getAllUser = async (
         userData.role == USER_ROLE.superAdmin ||
         userData.role == USER_ROLE.admin
     ) {
-        const userQuery = new QueryBuilder(
-            NormalUser.find({ isRegistrationCompleted: true })
-                .select(
-                    'name user email address checkInDate checkOutDate gender'
-                )
-                .populate({
-                    path: 'user',
-                    select: 'isBlocked',
-                }),
-            query
-        )
-            .search(['name'])
-            .fields()
-            .filter()
-            .paginate()
-            .sort();
-
-        const result = await userQuery.modelQuery;
-        const meta = await userQuery.countTotal();
-        return {
-            meta,
-            result,
-        };
+        // const userQuery = new QueryBuilder(
+        //     NormalUser.find({ isRegistrationCompleted: true })
+        //         .select(
+        //             'name user email address checkInDate checkOutDate gender'
+        //         )
+        //         .populate({
+        //             path: 'user',
+        //             select: 'isBlocked',
+        //         }),
+        //     query
+        // )
+        //     .search(['name'])
+        //     .fields()
+        //     .filter()
+        //     .paginate()
+        //     .sort();
+        // const result = await userQuery.modelQuery;
+        // const meta = await userQuery.countTotal();
+        // return {
+        //     meta,
+        //     result,
+        // };
     } else {
         return null;
     }
@@ -123,8 +121,6 @@ const acceptRejectConnectionRequest = async (
     if (status == 'accept') {
         const result = await NormalUser.findByIdAndUpdate(profileId, {
             $addToSet: { connections: userId },
-        });
-        await NormalUser.findByIdAndUpdate(profileId, {
             $pull: { connectionRequest: userId },
         });
         return result;

@@ -9,7 +9,6 @@ import Admin from './admin.model';
 import mongoose from 'mongoose';
 import { TUser } from '../user/user.interface';
 import { USER_ROLE } from '../user/user.constant';
-import { JwtPayload } from 'jsonwebtoken';
 
 // register Admin
 const createAdmin = async (payload: IAdmin & { password: string }) => {
@@ -61,22 +60,17 @@ const createAdmin = async (payload: IAdmin & { password: string }) => {
     }
 };
 
-const updateAdminProfile = async (
-    userId: string,
-    userData: JwtPayload,
-    payload: Partial<IAdmin>
-) => {
-    if (userData.role == USER_ROLE.admin && userData.id != userId) {
-        throw new AppError(
-            httpStatus.UNAUTHORIZED,
-            "You don't have permission to update another admin profile"
-        );
+const updateAdminProfile = async (userId: string, payload: Partial<IAdmin>) => {
+    console.log('userid', userId);
+    const admin = await Admin.findById(userId);
+    if (!admin) {
+        throw new AppError(httpStatus.NOT_FOUND, 'Admin not found');
     }
-
     const result = await Admin.findByIdAndUpdate(userId, payload, {
         new: true,
         runValidators: true,
     });
+    console.log('result', result);
     if (payload.email) {
         await User.findByIdAndUpdate(result?.user, { email: payload.email });
     }

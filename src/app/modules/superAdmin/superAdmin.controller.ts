@@ -11,7 +11,7 @@ const updateUserProfile = catchAsync(async (req, res) => {
         req.body.profile_image = getCloudFrontUrl(file[0].key);
     }
     const result = await SuperAdminServices.updateSuperAdminProfile(
-        req.user.profileId,
+        req.user,
         req.body
     );
     sendResponse(res, {
