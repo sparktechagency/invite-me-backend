@@ -22,6 +22,6 @@ const ConnectionSchema = new Schema(
     { timestamps: true }
 );
 
-const ConnectionModel = model('Connection', ConnectionSchema);
+const Connection = model('Connection', ConnectionSchema);
 
-export default ConnectionModel;
+export default Connection;

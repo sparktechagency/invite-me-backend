@@ -11,6 +11,7 @@ import { feedbackRoutes } from '../modules/feedback/feedback.routes';
 import { AdminRoutes } from '../modules/admin/admin.routes';
 import { hotelRoutes } from '../modules/hotel/hotel.routes';
 import { superAdminRoutes } from '../modules/superAdmin/superAdmin.routes';
+import { connectionRoutes } from '../modules/connection/connection.routes';
 
 const router = Router();
 
@@ -64,6 +65,10 @@ const moduleRoutes = [
     {
         path: '/super-admin',
         router: superAdminRoutes,
+    },
+    {
+        path: '/connection',
+        router: connectionRoutes,
     },
 ];
 

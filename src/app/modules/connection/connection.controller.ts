@@ -1,24 +1,49 @@
-import httpStatus from "http-status";
-import catchAsync from "../../utilities/catchasync";
-import sendResponse from "../../utilities/sendResponse";
-import connectionServices from "./connection.service";
+import httpStatus from 'http-status';
+import catchAsync from '../../utilities/catchasync';
+import sendResponse from '../../utilities/sendResponse';
+import connectionServices from './connection.service';
 
-const updateUserProfile = catchAsync(async (req, res) => {
-    const { files } = req;
-    if (files && typeof files === "object" && "profile_image" in files) {
-        req.body.profile_image = files["profile_image"][0].path;
-    }
-    const result = await connectionServices.updateUserProfile(
+const addRemoveConnection = catchAsync(async (req, res) => {
+    const result = await connectionServices.connectionAddRemove(
         req.user.profileId,
-        req.body
+        req.params.id
     );
     sendResponse(res, {
         statusCode: httpStatus.OK,
         success: true,
-        message: "Profile updated successfully",
+        message: result?.message,
+        data: result?.result,
+    });
+});
+const accpetRejectConnectionRequest = catchAsync(async (req, res) => {
+    const result = await connectionServices.acceptRejectConnectionRequest(
+        req.user.profileId,
+        req.params.id,
+        req.query.status as string
+    );
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: result?.message,
+        data: result?.result,
+    });
+});
+const getAllConnectionRequest = catchAsync(async (req, res) => {
+    const result = await connectionServices.getAllConnectionRequest(
+        req.user.profileId,
+        req.query
+    );
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: 'Connection requests retrieved successfully',
         data: result,
     });
 });
 
-const ConnectionController = { updateUserProfile };
+const ConnectionController = {
+    addRemoveConnection,
+    accpetRejectConnectionRequest,
+    getAllConnectionRequest,
+};
 export default ConnectionController;
