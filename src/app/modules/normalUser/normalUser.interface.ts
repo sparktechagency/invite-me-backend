@@ -20,7 +20,7 @@ export interface INormalUser {
     bio: string;
     newPictures: string[];
     deletedPictures: string[];
-    connections: [Types.ObjectId];
-    connectionRequests: [Types.ObjectId];
+    // connections: [Types.ObjectId];
+    // connectionRequests: [Types.ObjectId];
     blockedUsers: [Types.ObjectId];
 }

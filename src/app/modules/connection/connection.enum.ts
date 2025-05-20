@@ -1,0 +1,5 @@
+export const ENUM_CONNECTION_STATUS = {
+    PENDING: 'PENDING',
+    ACCEPTED: 'ACCEPTED',
+    REJECTED: 'REJECTED',
+};
