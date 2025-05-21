@@ -4,7 +4,6 @@ import { authRoutes } from '../modules/auth/auth.routes';
 import { ManageRoutes } from '../modules/manage-web/manage.routes';
 import { normalUserRoutes } from '../modules/normalUser/normalUser.routes';
 import { notificationRoutes } from '../modules/notification/notification.routes';
-import { categoryRoutes } from '../modules/category/category.routes';
 import { bannerRoutes } from '../modules/banner/banner.routes';
 import { metaRoutes } from '../modules/meta/meta.routes';
 import { feedbackRoutes } from '../modules/feedback/feedback.routes';
@@ -36,10 +35,6 @@ const moduleRoutes = [
     {
         path: '/notification',
         router: notificationRoutes,
-    },
-    {
-        path: '/category',
-        router: categoryRoutes,
     },
 
     {
