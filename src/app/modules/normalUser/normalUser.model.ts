@@ -18,8 +18,6 @@ const NormalUserSchema = new Schema<INormalUser>(
         },
         email: {
             type: String,
-            // required: true,
-            // unique: true,
             default: '',
         },
         phone: {
@@ -54,16 +52,6 @@ const NormalUserSchema = new Schema<INormalUser>(
         checkOutDate: {
             type: Date,
         },
-        // connections: {
-        //     type: [Schema.Types.ObjectId],
-        //     ref: 'NormalUser',
-        //     default: [],
-        // },
-        // connectionRequests: {
-        //     type: [Schema.Types.ObjectId],
-        //     ref: 'NormalUser',
-        //     default: [],
-        // },
         blockedUsers: {
             type: [Schema.Types.ObjectId],
             ref: 'NormalUser',
@@ -72,6 +60,11 @@ const NormalUserSchema = new Schema<INormalUser>(
         isRegistrationCompleted: {
             type: Boolean,
             default: false,
+        },
+        hotel: {
+            type: Schema.Types.ObjectId,
+            ref: 'Hotel',
+            required: true,
         },
     },
     {

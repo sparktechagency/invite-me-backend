@@ -23,4 +23,5 @@ export interface INormalUser {
     // connections: [Types.ObjectId];
     // connectionRequests: [Types.ObjectId];
     blockedUsers: [Types.ObjectId];
+    hotel: Types.ObjectId;
 }

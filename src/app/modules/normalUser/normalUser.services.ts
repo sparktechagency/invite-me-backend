@@ -1,11 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import httpStatus from 'http-status';
 import AppError from '../../error/appError';
 import { INormalUser } from './normalUser.interface';
 import NormalUser from './normalUser.model';
 import mongoose from 'mongoose';
 import { JwtPayload } from 'jsonwebtoken';
-import { USER_ROLE } from '../user/user.constant';
-import QueryBuilder from '../../builder/QueryBuilder';
 
 const updateUserProfile = async (id: string, payload: Partial<INormalUser>) => {
     if (payload.email) {
@@ -42,56 +41,356 @@ const getAllUser = async (
     userData: JwtPayload,
     query: Record<string, unknown>
 ) => {
-    if (
-        userData.role == USER_ROLE.superAdmin ||
-        userData.role == USER_ROLE.admin
-    ) {
-        const userQuery = new QueryBuilder(
-            NormalUser.find({ isRegistrationCompleted: true })
-                .select(
-                    'name user email address checkInDate checkOutDate gender'
-                )
-                .populate({
-                    path: 'user',
-                    select: 'isBlocked',
-                }),
-            query
-        )
-            .search(['name'])
-            .fields()
-            .filter()
-            .paginate()
-            .sort();
-        const result = await userQuery.modelQuery;
-        const meta = await userQuery.countTotal();
+    if (userData.role === 'superAdmin' || userData.role === 'admin') {
+        const page = parseInt(query.page as string) || 1;
+        const limit = parseInt(query.limit as string) || 10;
+        const skip = (page - 1) * limit;
+        const searchTerm = (query.searchTerm as string) || '';
+        const sortField = (query.sortBy as string) || 'createdAt';
+        const sortOrder = query.sortOrder === 'asc' ? 1 : -1;
+        const hotelId = query.hotel
+            ? new mongoose.Types.ObjectId(query.hotel as string)
+            : null;
+        const isBlockFilter =
+            query.isBlocked !== undefined ? query.isBlocked === 'true' : null;
+
+        const pipeline: any[] = [];
+
+        // 1. Filter by hotel if provided
+        if (hotelId) {
+            pipeline.push({
+                $match: { hotel: hotelId },
+            });
+        }
+
+        // 2. Lookup User to get userDetails
+        pipeline.push({
+            $lookup: {
+                from: 'users',
+                localField: 'user',
+                foreignField: '_id',
+                as: 'user',
+            },
+        });
+        pipeline.push({ $unwind: '$user' });
+
+        // 3. Filter by isBlocked if filter provided
+        if (isBlockFilter !== null) {
+            pipeline.push({
+                $match: { 'user.isBlocked': isBlockFilter },
+            });
+        }
+
+        // 4. Search by name or email if searchTerm exists
+        if (searchTerm) {
+            pipeline.push({
+                $match: {
+                    $or: [
+                        { name: { $regex: searchTerm, $options: 'i' } },
+                        { email: { $regex: searchTerm, $options: 'i' } },
+                    ],
+                },
+            });
+        }
+
+        // 5. Project limited NormalUser fields and keep hotel id
+        pipeline.push({
+            $project: {
+                _id: 1,
+                name: 1,
+                email: 1,
+                profile_image: 1,
+                dateOfBirth: 1,
+                hotel: 1,
+                user: 1, // keep whole userDetails for now, next project limits fields
+                checkOutDate: 1,
+                checkInDate: 1,
+            },
+        });
+
+        // 6. Lookup hotel details
+        pipeline.push({
+            $lookup: {
+                from: 'hotels',
+                localField: 'hotel',
+                foreignField: '_id',
+                as: 'hotel',
+            },
+        });
+        pipeline.push({
+            $unwind: {
+                path: '$hotel',
+                preserveNullAndEmptyArrays: true,
+            },
+        });
+
+        // 7. Final projection: limit userDetails and hotelDetails fields
+        pipeline.push({
+            $project: {
+                _id: 1,
+                name: 1,
+                email: 1,
+                profile_image: 1,
+                dateOfBirth: 1,
+                checkOutDate: 1,
+                checkInDate: 1,
+                user: {
+                    _id: 1,
+                    isBlocked: 1,
+                },
+
+                hotel: {
+                    _id: 1,
+                    name: 1,
+                    address: 1,
+                    hotel_image: 1,
+                    location: 1,
+                },
+            },
+        });
+
+        // 8. Sort
+        pipeline.push({
+            $sort: {
+                [sortField]: sortOrder,
+            },
+        });
+
+        // 9. Facet for pagination and total count
+        pipeline.push({
+            $facet: {
+                metadata: [{ $count: 'total' }],
+                data: [{ $skip: skip }, { $limit: limit }],
+            },
+        });
+
+        // 10. Unwind metadata and project total count with data
+        pipeline.push({
+            $unwind: {
+                path: '$metadata',
+                preserveNullAndEmptyArrays: true,
+            },
+        });
+        pipeline.push({
+            $project: {
+                data: 1,
+                total: { $ifNull: ['$metadata.total', 0] },
+            },
+        });
+
+        const result = await NormalUser.aggregate(pipeline);
+
+        const users = result[0]?.data || [];
+        const total = result[0]?.total || 0;
+        const totalPages = Math.ceil(total / limit);
+
         return {
-            meta,
-            result,
+            meta: {
+                page,
+                limit,
+                total,
+                totalPages,
+            },
+            result: users,
         };
     } else {
-        // const userQuery = new QueryBuilder(
-        //     NormalUser.find({ isRegistrationCompleted: true })
-        //         .select(
-        //             'name user email address checkInDate checkOutDate gender'
-        //         )
-        //         .populate({
-        //             path: 'user',
-        //             select: 'isBlocked',
-        //         }),
-        //     query
-        // )
-        //     .search(['name'])
-        //     .fields()
-        //     .filter()
-        //     .paginate()
-        //     .sort();
-        // const result = await userQuery.modelQuery;
-        // const meta = await userQuery.countTotal();
-        // return {
-        //     meta,
-        //     result,
-        // };
-        return null;
+        const profileId = userData.profileId; // current user's NormalUser _id as string
+        const currentUserId = new mongoose.Types.ObjectId(profileId);
+
+        const page = parseInt(query.page as string) || 1;
+        const limit = parseInt(query.limit as string) || 10;
+        const skip = (page - 1) * limit;
+        const searchTerm = (query.searchTerm as string) || '';
+        const sortField = (query.sortBy as string) || 'createdAt';
+        const sortOrder = query.sortOrder === 'asc' ? 1 : -1;
+        const hotelId = query.hotel
+            ? new mongoose.Types.ObjectId(query.hotel as string)
+            : null;
+        const isBlockFilter =
+            query.isBlocked !== undefined ? query.isBlocked === 'true' : null;
+
+        const pipeline: any[] = [];
+
+        // Exclude current user
+        pipeline.push({
+            $match: { _id: { $ne: currentUserId } },
+        });
+
+        // Filter by hotel if provided
+        if (hotelId) {
+            pipeline.push({
+                $match: { hotel: hotelId },
+            });
+        }
+
+        // Lookup User details
+        pipeline.push({
+            $lookup: {
+                from: 'users',
+                localField: 'user',
+                foreignField: '_id',
+                as: 'user',
+            },
+        });
+        pipeline.push({ $unwind: '$user' });
+
+        // Filter by isBlocked if filter provided
+        if (isBlockFilter !== null) {
+            pipeline.push({
+                $match: { 'user.isBlocked': isBlockFilter },
+            });
+        }
+
+        // Search by name or email
+        if (searchTerm) {
+            pipeline.push({
+                $match: {
+                    $or: [
+                        { name: { $regex: searchTerm, $options: 'i' } },
+                        { email: { $regex: searchTerm, $options: 'i' } },
+                    ],
+                },
+            });
+        }
+
+        // Lookup hotel details
+        pipeline.push({
+            $lookup: {
+                from: 'hotels',
+                localField: 'hotel',
+                foreignField: '_id',
+                as: 'hotel',
+            },
+        });
+        pipeline.push({
+            $unwind: { path: '$hotel', preserveNullAndEmptyArrays: true },
+        });
+
+        // Lookup Connection with current user
+        pipeline.push({
+            $lookup: {
+                from: 'connections',
+                let: { otherUserId: '$_id' },
+                pipeline: [
+                    {
+                        $match: {
+                            $expr: {
+                                $or: [
+                                    {
+                                        $and: [
+                                            { $eq: ['$sender', currentUserId] },
+                                            {
+                                                $eq: [
+                                                    '$receiver',
+                                                    '$$otherUserId',
+                                                ],
+                                            },
+                                        ],
+                                    },
+                                    {
+                                        $and: [
+                                            {
+                                                $eq: [
+                                                    '$receiver',
+                                                    currentUserId,
+                                                ],
+                                            },
+                                            {
+                                                $eq: [
+                                                    '$sender',
+                                                    '$$otherUserId',
+                                                ],
+                                            },
+                                        ],
+                                    },
+                                ],
+                            },
+                        },
+                    },
+                ],
+                as: 'connection',
+            },
+        });
+        // Optional: unwind connection (can be empty)
+        pipeline.push({
+            $unwind: {
+                path: '$connection',
+                preserveNullAndEmptyArrays: true,
+            },
+        });
+
+        // Project only needed fields from NormalUser, user, hotel and full connection
+        pipeline.push({
+            $project: {
+                _id: 1,
+                name: 1,
+                email: 1,
+                profile_image: 1,
+                dateOfBirth: 1,
+                checkOutDate: 1,
+                checkInDate: 1,
+
+                user: {
+                    _id: 1,
+                    isBlocked: 1,
+                },
+
+                hotel: {
+                    _id: 1,
+                    name: 1,
+                    address: 1,
+                    hotel_image: 1,
+                    location: 1,
+                },
+
+                connection: 1, // include full connection document
+            },
+        });
+
+        // Sort
+        pipeline.push({
+            $sort: {
+                [sortField]: sortOrder,
+            },
+        });
+
+        // Facet for pagination and total count
+        pipeline.push({
+            $facet: {
+                metadata: [{ $count: 'total' }],
+                data: [{ $skip: skip }, { $limit: limit }],
+            },
+        });
+
+        // Unwind metadata and project total count with data
+        pipeline.push({
+            $unwind: {
+                path: '$metadata',
+                preserveNullAndEmptyArrays: true,
+            },
+        });
+        pipeline.push({
+            $project: {
+                data: 1,
+                total: { $ifNull: ['$metadata.total', 0] },
+            },
+        });
+
+        const result = await NormalUser.aggregate(pipeline);
+
+        const users = result[0]?.data || [];
+        const total = result[0]?.total || 0;
+        const totalPages = Math.ceil(total / limit);
+
+        return {
+            meta: {
+                page,
+                limit,
+                total,
+                totalPages,
+            },
+            result: users,
+        };
     }
 };
 
