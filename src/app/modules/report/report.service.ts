@@ -4,8 +4,15 @@ import AppError from '../../error/appError';
 import NormalUser from '../normalUser/normalUser.model';
 import { IReport } from './report.interface';
 import Report from './report.model';
+import mongoose from 'mongoose';
 
 const createReport = async (profileId: string, payload: IReport) => {
+    if (new mongoose.Types.ObjectId(profileId) == payload.reportTo) {
+        throw new AppError(
+            httpStatus.NOT_FOUND,
+            'You are not able to report yourself'
+        );
+    }
     const reportTo = await NormalUser.findById(payload.reportTo);
     if (!reportTo) {
         throw new AppError(httpStatus.NOT_FOUND, 'Reported user not found');
