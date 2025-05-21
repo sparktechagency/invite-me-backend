@@ -11,6 +11,7 @@ import { AdminRoutes } from '../modules/admin/admin.routes';
 import { hotelRoutes } from '../modules/hotel/hotel.routes';
 import { superAdminRoutes } from '../modules/superAdmin/superAdmin.routes';
 import { connectionRoutes } from '../modules/connection/connection.routes';
+import { reportRoutes } from '../modules/report/report.routes';
 
 const router = Router();
 
@@ -64,6 +65,10 @@ const moduleRoutes = [
     {
         path: '/connection',
         router: connectionRoutes,
+    },
+    {
+        path: '/report',
+        router: reportRoutes,
     },
 ];
 
