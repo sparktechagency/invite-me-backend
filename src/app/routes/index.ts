@@ -70,6 +70,10 @@ const moduleRoutes = [
         path: '/report',
         router: reportRoutes,
     },
+    {
+        path: '/meta',
+        router: metaRoutes,
+    },
 ];
 
 moduleRoutes.forEach((route) => router.use(route.path, route.router));

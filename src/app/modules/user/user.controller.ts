@@ -4,8 +4,34 @@ import catchAsync from '../../utilities/catchasync';
 import sendResponse from '../../utilities/sendResponse';
 import userServices from './user.services';
 import { getCloudFrontUrl } from '../../helper/mutler-s3-uploader';
+import Hotel from '../hotel/hotel.model';
+import { checkIpInRange } from '../../utilities/checkIpInRange';
 
 const registerUser = catchAsync(async (req, res) => {
+    const userIp = req.ip;
+    const hotels = await Hotel.find();
+    // const hotelAccessGranted = hotels.some((hotel) =>
+    //     checkIpInRange(userIp as string, hotel.wifiIp)
+    // );
+
+    // if (!hotelAccessGranted) {
+    //     return res
+    //         .status(403)
+    //         .json({ error: 'Access Denied: Invalid IP for any hotel' });
+    // }
+    // Find the hotel whose Wi-Fi IP range matches the user's IP
+    const matchedHotel = hotels.find((hotel) =>
+        checkIpInRange(userIp as string, hotel.wifiIp)
+    );
+
+    if (!matchedHotel) {
+        return res
+            .status(403)
+            .json({ error: 'Access Denied: Invalid IP for any hotel' });
+    }
+
+    req.body.hotel = matchedHotel._id;
+
     if (req.files?.pictures) {
         req.body.pictures = req.files.pictures.map((file: any) => {
             return getCloudFrontUrl(file.key);

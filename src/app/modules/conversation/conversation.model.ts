@@ -5,7 +5,7 @@ const conversationSchema = new Schema<IConversation>(
     {
         participants: {
             type: [Schema.Types.ObjectId],
-            ref: 'User',
+            ref: 'NormalUser',
         },
         lastMessage: {
             type: Schema.Types.ObjectId,

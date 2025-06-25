@@ -10,10 +10,10 @@ export const getSingleConversation = async (
         .sort({ updatedAt: -1 })
         .populate({
             path: 'participants',
-            select: 'name profile_image _id email',
+            select: 'name profile_image _id ',
         })
-        .populate({ path: 'lastMessage', model: 'Message' })
-        .populate({ path: 'projectId', select: 'name title projectImage' });
+        .populate({ path: 'lastMessage', model: 'Message' });
+    // .populate({ path: 'projectId', select: 'name title projectImage' });
 
     if (!conversation) return null;
     const countUnseenMessage = await Message.countDocuments({
@@ -31,7 +31,7 @@ export const getSingleConversation = async (
         userData: {
             _id: otherUser?._id,
             name: otherUser?.name,
-            email: otherUser.email,
+            email: otherUser?.email,
             profileImage: otherUser?.profile_image,
         },
         unseenMsg: countUnseenMessage,

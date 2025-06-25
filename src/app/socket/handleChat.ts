@@ -11,7 +11,7 @@ const handleChat = async (
     currentUserId: string
 ): Promise<void> => {
     // new message -----------------------
-    socket.on('new-message', async (data) => {
+    socket.on('send-message', async (data) => {
         if (!data.receiver) {
             emitError(socket, {
                 code: 400,
@@ -28,16 +28,19 @@ const handleChat = async (
                 { participants: data.receiver },
             ],
         });
+        console.log('conversation', conversation);
+
         if (!conversation) {
             conversation = await Conversation.create({
-                participants: [data.sender, data.receiver],
+                participants: [currentUserId, data.receiver],
             });
         }
         const messageData = {
             text: data.text,
             imageUrl: data.imageUrl || [],
             videoUrl: data.videoUrl || [],
-            msgByUserId: data?.sender,
+            // msgByUserId: data?.sender,
+            msgByUserId: currentUserId,
             conversationId: conversation?._id,
         };
         const saveMessage = await Message.create(messageData);
@@ -48,15 +51,14 @@ const handleChat = async (
             }
         );
         // send to the frontend only new message data ---------------
-        io.to(data?.sender.toString()).emit(
-            `message-${data?.receiver}`,
+        io.to(currentUserId.toString()).emit(
+            `message-${data?.currentUserId}`,
             saveMessage
         );
         io.to(data?.receiver.toString()).emit(
-            `message-${data?.sender}`,
+            `message-${data?.receiver}`,
             saveMessage
         );
-
         //send conversation
         const conversationSender = await getSingleConversation(
             conversation._id,
@@ -66,6 +68,7 @@ const handleChat = async (
             conversation._id,
             data?.receiver
         );
+
         io.to(currentUserId.toString()).emit(
             'conversation',
             conversationSender
@@ -81,12 +84,12 @@ const handleChat = async (
         );
         //send conversation --------------
         const conversationSender = await getSingleConversation(
-            currentUserId,
-            msgByUserId
+            conversationId,
+            currentUserId
         );
         const conversationReceiver = await getSingleConversation(
-            msgByUserId,
-            currentUserId
+            conversationId,
+            msgByUserId
         );
 
         io.to(currentUserId as string).emit('conversation', conversationSender);

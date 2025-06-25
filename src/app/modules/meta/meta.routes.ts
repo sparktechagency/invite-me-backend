@@ -13,7 +13,7 @@ router.get(
 
 router.get(
     '/user-chart-data',
-    auth(USER_ROLE.superAdmin),
+    auth(USER_ROLE.superAdmin, USER_ROLE.admin),
     MetaController.getUserChartData
 );
 router.get(

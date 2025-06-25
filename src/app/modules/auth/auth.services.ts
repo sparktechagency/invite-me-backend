@@ -15,9 +15,8 @@ import sendEmail from '../../utilities/sendEmail';
 import NormalUser from '../normalUser/normalUser.model';
 import appleSigninAuth from 'apple-signin-auth';
 import { OAuth2Client } from 'google-auth-library';
-const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
-// const GOOGLE_CLIENT_IDS = (process.env.GOOGLE_CLIENT_IDS || '').split(',');
 import axios from 'axios';
+import mongoose from 'mongoose';
 const generateVerifyCode = (): number => {
     return Math.floor(100000 + Math.random() * 900000);
 };
@@ -433,10 +432,16 @@ const resendVerifyCode = async (email: string) => {
 const loginWithOAuth = async (
     provider: string,
     token: string,
-    role: TUserRole = 'user'
+    role: TUserRole = 'user',
+    phoneType: string
 ) => {
     let email, id, name, picture;
 
+    const clientId =
+        phoneType == 'ios'
+            ? process.env.IOS_CLIENT_ID
+            : process.env.ANDROID_CLIENT_ID;
+    const googleClient = new OAuth2Client(clientId);
     try {
         if (provider === 'google') {
             try {
@@ -444,7 +449,7 @@ const loginWithOAuth = async (
                     idToken: token,
                     // audience: process.env.GOOGLE_CLIENT_ID,
                     // audience: GOOGLE_CLIENT_IDS,
-                    audience: process.env.IOS_CLIENT_ID,
+                    audience: clientId,
                 });
 
                 const payload = ticket.getPayload();
@@ -463,7 +468,7 @@ const loginWithOAuth = async (
                 ) {
                     throw new AppError(
                         401,
-                        'Google token audience mismatch. Please check your client ID.'
+                        `Google token audience mismatch. Please check your client ID. ${err.message}`
                     );
                 }
                 throw new AppError(
@@ -524,31 +529,86 @@ const loginWithOAuth = async (
         // Find or create user
         let user = await User.findOne({ [`${provider}Id`]: id });
 
+        // if (!user) {
+        //     user = new User({
+        //         email,
+        //         [`${provider}Id`]: id,
+        //         name,
+        //         profilePic: picture,
+        //         role,
+        //         isVerified: true,
+        //     });
+
+        //     await user.save();
+        //     const nameParts = name.split(' ');
+        //     const firstName = nameParts[0];
+        //     const lastName = nameParts[1] || '';
+
+        //     const result = await NormalUser.create({
+        //         firstName,
+        //         lastName,
+        //         user: user._id,
+        //         email,
+        //         profile_image: picture,
+        //     });
+
+        //     user = await User.findByIdAndUpdate(
+        //         user._id,
+        //         { profileId: result._id },
+        //         { new: true, runValidators: true }
+        //     );
+        // }
         if (!user) {
-            user = new User({
-                email,
-                [`${provider}Id`]: id,
-                profilePic: picture,
-                role,
-                isVerified: true,
-            });
+            const session = await mongoose.startSession();
+            session.startTransaction();
 
-            await user.save();
+            try {
+                user = new User({
+                    email,
+                    [`${provider}Id`]: id,
+                    name,
+                    profilePic: picture,
+                    role,
+                    isVerified: true,
+                });
 
-            const nameParts = name.split(' ');
-            const fullName = nameParts[0] + nameParts[1] || ' ';
-            const result = await NormalUser.create({
-                name: fullName,
-                user: user._id,
-                email,
-                profile_image: picture,
-            });
+                await user.save({ session });
 
-            user = await User.findByIdAndUpdate(
-                user._id,
-                { profileId: result._id },
-                { new: true, runValidators: true }
-            );
+                const nameParts = name.split(' ');
+                const firstName = nameParts[0];
+                const lastName = nameParts[1] || '';
+
+                const result = await NormalUser.create(
+                    [
+                        {
+                            firstName,
+                            lastName,
+                            user: user._id,
+                            email,
+                            profile_image: picture,
+                        },
+                    ],
+                    { session }
+                );
+
+                user = await User.findByIdAndUpdate(
+                    user._id,
+                    { profileId: result[0]._id },
+                    { new: true, runValidators: true, session }
+                );
+
+                await session.commitTransaction();
+                session.endSession();
+                //
+            } catch (error: any) {
+                await session.abortTransaction();
+                session.endSession();
+                throw new AppError(
+                    httpStatus.SERVICE_UNAVAILABLE,
+                    error.message ||
+                        'Something went wrong please try again letter'
+                );
+            }
         }
 
         if (!user) {
@@ -573,6 +633,7 @@ const loginWithOAuth = async (
             config.jwt_refresh_secret as string,
             config.jwt_refresh_expires_in as string
         );
+
         return { accessToken, refreshToken };
     } catch (error: any) {
         console.error('OAuth login error:', error);
