@@ -1,11 +1,18 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import Hotel from './hotel.model';
 import { IHotel } from './hotel.interface';
 import QueryBuilder from '../../builder/QueryBuilder';
 import AppError from '../../error/appError';
 import httpStatus from 'http-status';
 import { deleteFileFromS3 } from '../../helper/deleteFromS3';
+import validator from 'validator';
 
 const createHotel = async (payload: IHotel): Promise<IHotel> => {
+    if (!(validator as any).isCIDR(payload.wifiIp))
+        throw new AppError(
+            httpStatus.UNAVAILABLE_FOR_LEGAL_REASONS,
+            'Invalid CIDR format'
+        );
     return await Hotel.create(payload);
 };
 

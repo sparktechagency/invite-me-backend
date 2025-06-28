@@ -581,11 +581,11 @@ const loginWithOAuth = async (
                 const result = await NormalUser.create(
                     [
                         {
-                            firstName,
-                            lastName,
+                            name: firstName + ' ' + lastName,
                             user: user._id,
                             email,
                             profile_image: picture,
+                            hotel: '685cb53494ec9a7c11bcc7f1',
                         },
                     ],
                     { session }
@@ -615,6 +615,10 @@ const loginWithOAuth = async (
             throw new AppError(404, 'User not found after creation');
         }
 
+        const profile = await NormalUser.findById(user.profileId).select(
+            'isRegistrationCompleted'
+        );
+
         // Prepare JWT tokens
         const jwtPayload = {
             id: user._id,
@@ -634,7 +638,11 @@ const loginWithOAuth = async (
             config.jwt_refresh_expires_in as string
         );
 
-        return { accessToken, refreshToken };
+        return {
+            accessToken,
+            refreshToken,
+            isRegistrationComplete: profile?.isRegistrationCompleted,
+        };
     } catch (error: any) {
         console.error('OAuth login error:', error);
 

@@ -64,7 +64,7 @@ const NormalUserSchema = new Schema<INormalUser>(
         hotel: {
             type: Schema.Types.ObjectId,
             ref: 'Hotel',
-            required: true,
+            // required: true,
         },
     },
     {
