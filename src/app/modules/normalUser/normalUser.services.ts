@@ -124,7 +124,7 @@ const getAllUser = async (
             },
         });
 
-        // 7. Final projection: limit userDetails and hotelDetails fields
+        // 7. Final projection: limit userDetails and hotelDetails fields----
         pipeline.push({
             $project: {
                 _id: 1,
