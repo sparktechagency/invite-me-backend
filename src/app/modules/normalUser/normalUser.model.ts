@@ -31,8 +31,8 @@ const NormalUserSchema = new Schema<INormalUser>(
             type: String,
             enum: Object.values(ENUM_GENDER),
         },
-        dateOfBirth: {
-            type: Date,
+        age: {
+            type: Number,
         },
         address: {
             type: String,

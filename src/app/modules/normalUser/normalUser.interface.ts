@@ -9,7 +9,7 @@ export interface INormalUser {
     phone: string;
     profile_image: string;
     gender: (typeof ENUM_GENDER)[keyof typeof ENUM_GENDER];
-    dateOfBirth: Date;
+    age: number;
     address: string;
     interests: string[];
     language: string[];

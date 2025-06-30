@@ -27,15 +27,7 @@ const registerNormalUserValidationSchema = z.object({
 
         gender: z.enum(Object.values(ENUM_GENDER) as [string, ...string[]]),
 
-        dateOfBirth: z.preprocess(
-            (arg) => {
-                if (typeof arg === 'string' || arg instanceof Date)
-                    return new Date(arg);
-            },
-            z.date({
-                invalid_type_error: 'Invalid date format for dateOfBirth',
-            })
-        ),
+        age: z.number().optional(),
 
         address: z.string({
             required_error: 'Address is required',
@@ -127,17 +119,7 @@ const updateNormalUserValidationSchema = z.object({
             })
             .optional(),
 
-        dateOfBirth: z
-            .preprocess(
-                (arg) => {
-                    if (typeof arg === 'string' || arg instanceof Date)
-                        return new Date(arg);
-                },
-                z.date({
-                    invalid_type_error: 'Invalid date format for dateOfBirth',
-                })
-            )
-            .optional(),
+        age: z.number({}).optional(),
 
         address: z
             .string({
