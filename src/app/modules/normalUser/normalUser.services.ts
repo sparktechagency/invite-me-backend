@@ -131,7 +131,7 @@ const getAllUser = async (
                 name: 1,
                 email: 1,
                 profile_image: 1,
-                dateOfBirth: 1,
+                age: 1,
                 checkOutDate: 1,
                 checkInDate: 1,
                 user: {
@@ -326,7 +326,7 @@ const getAllUser = async (
                 name: 1,
                 email: 1,
                 profile_image: 1,
-                dateOfBirth: 1,
+                age: 1,
                 checkOutDate: 1,
                 checkInDate: 1,
 
