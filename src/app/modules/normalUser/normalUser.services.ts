@@ -329,7 +329,7 @@ const getAllUser = async (
                 age: 1,
                 checkOutDate: 1,
                 checkInDate: 1,
-
+                address: 1,
                 user: {
                     _id: 1,
                     isBlocked: 1,
