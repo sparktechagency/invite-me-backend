@@ -441,6 +441,7 @@ const loginWithOAuth = async (
         phoneType == 'ios'
             ? process.env.IOS_CLIENT_ID
             : process.env.ANDROID_CLIENT_ID;
+
     const googleClient = new OAuth2Client(clientId);
     try {
         if (provider === 'google') {
