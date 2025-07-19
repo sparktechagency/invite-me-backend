@@ -5,8 +5,8 @@ import MessageController from './message.controller';
 
 const router = express.Router();
 
-router.post(
-    '/get-messages',
+router.get(
+    '/get-messages/:id',
     auth(USER_ROLE.user, USER_ROLE.superAdmin),
     MessageController.getMessages
 );

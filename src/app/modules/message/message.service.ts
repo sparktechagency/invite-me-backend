@@ -2,15 +2,15 @@
 import Conversation from '../conversation/conversation.model';
 import Message from './message.model';
 import QueryBuilder from '../../builder/QueryBuilder';
-import { User } from '../user/user.model';
+import NormalUser from '../normalUser/normalUser.model';
 
 const getMessages = async (
     profileId: string,
-    paylaod: any,
+    userId: string,
     query: Record<string, unknown>
 ) => {
     const conversation = await Conversation.findOne({
-        $and: [{ participants: profileId }, { participants: paylaod.userId }],
+        $and: [{ participants: profileId }, { participants: userId }],
     });
 
     if (conversation) {
@@ -29,9 +29,8 @@ const getMessages = async (
         const result = await messageQuery.modelQuery;
         const meta = await messageQuery.countTotal();
 
-        const userData = await User.findById(paylaod.userId).select(
-            'name profile_image'
-        );
+        const userData =
+            await NormalUser.findById(userId).select('name profile_image');
         return {
             meta,
             result: {
@@ -41,9 +40,8 @@ const getMessages = async (
             },
         };
     }
-    const userData = await User.findById(paylaod.userId).select(
-        'name profile_image'
-    );
+    const userData =
+        await NormalUser.findById(userId).select('name profile_image');
 
     return {
         result: {

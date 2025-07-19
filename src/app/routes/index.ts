@@ -13,6 +13,7 @@ import { superAdminRoutes } from '../modules/superAdmin/superAdmin.routes';
 import { connectionRoutes } from '../modules/connection/connection.routes';
 import { reportRoutes } from '../modules/report/report.routes';
 import { conversationRoutes } from '../modules/conversation/conversation.routes';
+import { messageRoutes } from '../modules/message/message.routes';
 
 const router = Router();
 
@@ -78,6 +79,10 @@ const moduleRoutes = [
     {
         path: '/conversation',
         router: conversationRoutes,
+    },
+    {
+        path: '/message',
+        router: messageRoutes,
     },
 ];
 
