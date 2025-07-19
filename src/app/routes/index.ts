@@ -12,6 +12,7 @@ import { hotelRoutes } from '../modules/hotel/hotel.routes';
 import { superAdminRoutes } from '../modules/superAdmin/superAdmin.routes';
 import { connectionRoutes } from '../modules/connection/connection.routes';
 import { reportRoutes } from '../modules/report/report.routes';
+import { conversationRoutes } from '../modules/conversation/conversation.routes';
 
 const router = Router();
 
@@ -73,6 +74,10 @@ const moduleRoutes = [
     {
         path: '/meta',
         router: metaRoutes,
+    },
+    {
+        path: '/conversation',
+        router: conversationRoutes,
     },
 ];
 

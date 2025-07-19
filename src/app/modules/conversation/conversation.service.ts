@@ -81,6 +81,7 @@ const getConversation = async (
     profileId: string,
     query: Record<string, unknown>
 ) => {
+    console.log('profileId', profileId);
     const filters = pick(query, ['searchTerm', 'email', 'name']);
 
     const paginationOptions = pick(query, [
@@ -139,23 +140,9 @@ const getConversation = async (
                 preserveNullAndEmptyArrays: true,
             },
         },
-        // {
-        //   $lookup: {
-        //     from: 'projects',
-        //     localField: 'projectId',
-        //     foreignField: '_id',
-        //     as: 'project',
-        //   },
-        // },
-        // {
-        //   $unwind: {
-        //     path: '$project',
-        //     preserveNullAndEmptyArrays: true,
-        //   },
-        // },
         {
             $lookup: {
-                from: 'users',
+                from: 'normalusers',
                 let: { participants: '$participants' },
                 pipeline: [
                     {
@@ -262,6 +249,7 @@ const getConversation = async (
         Conversation.aggregate(pipeline),
         Conversation.aggregate([...pipeline.slice(0, -2), { $count: 'total' }]),
     ]);
+    console.log('result', results, totalCount);
     const total = totalCount[0]?.total || 0;
     return {
         meta: {
