@@ -6,3 +6,4 @@ logs/
 dist/
 entrypoint.sh
 yarn.lock
+.env.example
