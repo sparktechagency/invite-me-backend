@@ -405,59 +405,59 @@ const getSingleUser = async (id: string) => {
 };
 
 // send connection request
-const connectionAddRemove = async (ownId: string, id: string) => {
-    const profileId = new mongoose.Types.ObjectId(ownId);
-    const user = await NormalUser.findById(id);
-    if (user?.connections.includes(profileId)) {
-        await NormalUser.findByIdAndUpdate(id, {
-            $pull: { connections: profileId },
-        });
-        return 2;
-    } else if (user?.connectionRequests?.includes(profileId)) {
-        await NormalUser.findByIdAndUpdate(id, {
-            $pull: { connectionRequests: profileId },
-        });
-        return 3;
-    } else {
-        await NormalUser.findByIdAndUpdate(id, {
-            $addToSet: { connectionRequest: profileId },
-        });
-        return 1;
-    }
-};
-// accept reject
-const acceptRejectConnectionRequest = async (
-    ownId: string,
-    id: string,
-    status: string
-) => {
-    const profileId = new mongoose.Types.ObjectId(ownId);
-    const userId = new mongoose.Types.ObjectId(id);
-    const me = await NormalUser.findById(profileId);
-    if (!me?.connectionRequests.includes(userId)) {
-        throw new AppError(
-            httpStatus.NOT_FOUND,
-            'This user is not in your connetion request list'
-        );
-    }
-    if (status == 'accept') {
-        const result = await NormalUser.findByIdAndUpdate(profileId, {
-            $addToSet: { connections: userId },
-            $pull: { connectionRequest: userId },
-        });
-        return result;
-    } else if (status == 'reject') {
-        const result = await NormalUser.findByIdAndUpdate(profileId, {
-            $pull: { connectionRequest: userId },
-        });
-        return result;
-    } else {
-        throw new AppError(
-            httpStatus.BAD_REQUEST,
-            'You need to pass accept or reject in status'
-        );
-    }
-};
+// const connectionAddRemove = async (ownId: string, id: string) => {
+//     const profileId = new mongoose.Types.ObjectId(ownId);
+//     const user = await NormalUser.findById(id);
+//     if (user?.connections.includes(profileId)) {
+//         await NormalUser.findByIdAndUpdate(id, {
+//             $pull: { connections: profileId },
+//         });
+//         return 2;
+//     } else if (user?.connectionRequests?.includes(profileId)) {
+//         await NormalUser.findByIdAndUpdate(id, {
+//             $pull: { connectionRequests: profileId },
+//         });
+//         return 3;
+//     } else {
+//         await NormalUser.findByIdAndUpdate(id, {
+//             $addToSet: { connectionRequest: profileId },
+//         });
+//         return 1;
+//     }
+// };
+// // accept reject
+// const acceptRejectConnectionRequest = async (
+//     ownId: string,
+//     id: string,
+//     status: string
+// ) => {
+//     const profileId = new mongoose.Types.ObjectId(ownId);
+//     const userId = new mongoose.Types.ObjectId(id);
+//     const me = await NormalUser.findById(profileId);
+//     if (!me?.connectionRequests.includes(userId)) {
+//         throw new AppError(
+//             httpStatus.NOT_FOUND,
+//             'This user is not in your connetion request list'
+//         );
+//     }
+//     if (status == 'accept') {
+//         const result = await NormalUser.findByIdAndUpdate(profileId, {
+//             $addToSet: { connections: userId },
+//             $pull: { connectionRequest: userId },
+//         });
+//         return result;
+//     } else if (status == 'reject') {
+//         const result = await NormalUser.findByIdAndUpdate(profileId, {
+//             $pull: { connectionRequest: userId },
+//         });
+//         return result;
+//     } else {
+//         throw new AppError(
+//             httpStatus.BAD_REQUEST,
+//             'You need to pass accept or reject in status'
+//         );
+//     }
+// };
 
 const blockUnblockUser = async (ownId: string, id: string) => {
     const profileId = new mongoose.Types.ObjectId(ownId);
@@ -486,8 +486,8 @@ const NormalUserServices = {
     updateUserProfile,
     getAllUser,
     getSingleUser,
-    connectionAddRemove,
-    acceptRejectConnectionRequest,
+    // connectionAddRemove,
+    // acceptRejectConnectionRequest,
     blockUnblockUser,
 };
 

@@ -47,44 +47,44 @@ const getSingleUser = catchAsync(async (req, res) => {
         data: result,
     });
 });
-const connectionAddRemove = catchAsync(async (req, res) => {
-    const result = await NormalUserServices.connectionAddRemove(
-        req.user.profileId,
-        req.params.id
-    );
-    let message;
-    if (result == 1) {
-        message = 'Connection request sent successfully';
-    } else if (result == 2) {
-        message = 'Connection removed successfully';
-    } else {
-        message = 'Connection request withdraw';
-    }
+// const connectionAddRemove = catchAsync(async (req, res) => {
+//     const result = await NormalUserServices.connectionAddRemove(
+//         req.user.profileId,
+//         req.params.id
+//     );
+//     let message;
+//     if (result == 1) {
+//         message = 'Connection request sent successfully';
+//     } else if (result == 2) {
+//         message = 'Connection removed successfully';
+//     } else {
+//         message = 'Connection request withdraw';
+//     }
 
-    sendResponse(res, {
-        statusCode: httpStatus.OK,
-        success: true,
-        message: message,
-        data: result,
-    });
-});
-const acceptRejectConnectionRequest = catchAsync(async (req, res) => {
-    const result = await NormalUserServices.acceptRejectConnectionRequest(
-        req.user.profileId,
-        req.params.id,
-        req.query.status as string
-    );
+//     sendResponse(res, {
+//         statusCode: httpStatus.OK,
+//         success: true,
+//         message: message,
+//         data: result,
+//     });
+// });
+// const acceptRejectConnectionRequest = catchAsync(async (req, res) => {
+//     const result = await NormalUserServices.acceptRejectConnectionRequest(
+//         req.user.profileId,
+//         req.params.id,
+//         req.query.status as string
+//     );
 
-    sendResponse(res, {
-        statusCode: httpStatus.OK,
-        success: true,
-        message:
-            req.query.status == 'accpet'
-                ? 'Connection request accepted'
-                : 'Connection request rejected',
-        data: result,
-    });
-});
+//     sendResponse(res, {
+//         statusCode: httpStatus.OK,
+//         success: true,
+//         message:
+//             req.query.status == 'accpet'
+//                 ? 'Connection request accepted'
+//                 : 'Connection request rejected',
+//         data: result,
+//     });
+// });
 const blockUnblockUser = catchAsync(async (req, res) => {
     const result = await NormalUserServices.blockUnblockUser(
         req.user.profileId,
@@ -106,8 +106,8 @@ const NormalUserController = {
     updateUserProfile,
     getAllUser,
     getSingleUser,
-    connectionAddRemove,
-    acceptRejectConnectionRequest,
+    // connectionAddRemove,
+    // acceptRejectConnectionRequest,
     blockUnblockUser,
 };
 

@@ -22,20 +22,10 @@ const getUserChartData = catchAsync(async (req, res) => {
         data: result,
     });
 });
-const getEarningsByType = catchAsync(async (req, res) => {
-    const result = await MetaService.getEarningsByType(Number(req?.query.year));
-    sendResponse(res, {
-        statusCode: httpStatus.OK,
-        success: true,
-        message: 'Earning chart data retrieved successfully',
-        data: result,
-    });
-});
 
 const MetaController = {
     getDashboardMetaData,
     getUserChartData,
-    getEarningsByType,
 };
 
 export default MetaController;
