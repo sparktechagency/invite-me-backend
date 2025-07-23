@@ -14,7 +14,7 @@ import sendContactUsEmail from './app/helper/sendContactUsEmail';
 import dotenv from 'dotenv';
 dotenv.config();
 
-// parser
+// parser---
 app.use(express.json());
 app.use(cookieParser());
 app.use(
