@@ -44,7 +44,7 @@ app.get('/', async (req, res) => {
     res.send({ message: 'Welcome to dance club server' });
 });
 
-// global error handler
+// global error handler---
 app.use(globalErrorHandler);
 // not found---------
 app.use(notFound);
