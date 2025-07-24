@@ -43,24 +43,24 @@ const registerUser = catchAsync(async (req, res) => {
 
     // req.body.hotel = matchedHotel._id;
 
-    const isProduction = process.env.NODE_ENV === 'production';
+    // const isProduction = process.env.NODE_ENV === 'production';
 
-    if (isProduction) {
-        const matchedHotel = hotels.find((hotel) =>
-            checkIpInRange(userIp as string, hotel.wifiIp)
-        );
+    // if (isProduction) {
+    //     const matchedHotel = hotels.find((hotel) =>
+    //         checkIpInRange(userIp as string, hotel.wifiIp)
+    //     );
 
-        if (!matchedHotel) {
-            return res
-                .status(403)
-                .json({ error: 'Access Denied: Invalid IP for any hotel' });
-        }
+    //     if (!matchedHotel) {
+    //         return res
+    //             .status(403)
+    //             .json({ error: 'Access Denied: Invalid IP for any hotel' });
+    //     }
 
-        req.body.hotel = matchedHotel._id;
-    } else {
-        // Development fallback: use a default hotel for testing
-        req.body.hotel = hotels[0]?._id; // or a fixed ID
-    }
+    //     req.body.hotel = matchedHotel._id;
+    // } else {
+    //     // Development fallback: use a default hotel for testing
+    //     req.body.hotel = hotels[0]?._id; // or a fixed ID
+    // }
 
     if (req.files?.pictures) {
         req.body.pictures = req.files.pictures.map((file: any) => {
