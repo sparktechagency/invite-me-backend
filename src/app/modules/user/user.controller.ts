@@ -6,6 +6,7 @@ import userServices from './user.services';
 import { getCloudFrontUrl } from '../../helper/mutler-s3-uploader';
 import Hotel from '../hotel/hotel.model';
 import { checkIpInRange } from '../../utilities/checkIpInRange';
+import AppError from '../../error/appError';
 
 const registerUser = catchAsync(async (req, res) => {
     // const userIp = req.ip;
@@ -31,17 +32,18 @@ const registerUser = catchAsync(async (req, res) => {
     // Find the hotel whose Wi-Fi IP range matches the user's IP
 
     const hotels = await Hotel.find();
-    const matchedHotel = hotels.find((hotel) =>
-        checkIpInRange(userIp as string, hotel.wifiIp)
-    );
+    // const matchedHotel = hotels.find((hotel) =>
+    //     checkIpInRange(userIp as string, hotel.wifiIp)
+    // );
 
-    if (!matchedHotel) {
-        return res
-            .status(403)
-            .json({ error: 'Access Denied: Invalid IP for any hotel' });
-    }
+    // if (!matchedHotel) {
+    //     throw new AppError(
+    //         httpStatus.BAD_REQUEST,
+    //         'Access Denied: Invalid IP for any hotel'
+    //     );
+    // }
 
-    req.body.hotel = matchedHotel._id;
+    // req.body.hotel = matchedHotel._id;
 
     const isProduction = process.env.NODE_ENV === 'production';
 
@@ -51,9 +53,10 @@ const registerUser = catchAsync(async (req, res) => {
         );
 
         if (!matchedHotel) {
-            return res
-                .status(403)
-                .json({ error: 'Access Denied: Invalid IP for any hotel' });
+            throw new AppError(
+                httpStatus.BAD_REQUEST,
+                'Access Denied: Invalid IP for any hotel'
+            );
         }
 
         req.body.hotel = matchedHotel._id;
