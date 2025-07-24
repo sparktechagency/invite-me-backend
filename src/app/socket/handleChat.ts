@@ -21,6 +21,15 @@ const handleChat = async (
             });
             return;
         }
+        if (!currentUserId) {
+            emitError(socket, {
+                code: 400,
+                message: 'You are not connected',
+                type: 'general',
+                details: 'You must connected before send message',
+            });
+            return;
+        }
 
         let conversation = await Conversation.findOne({
             $and: [
