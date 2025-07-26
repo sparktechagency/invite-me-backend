@@ -21,6 +21,7 @@ export interface TUser {
     appleId: string;
     googleId: string;
     isRegistrationCompleted: boolean;
+    loginThough: string;
 }
 
 export interface TLoginUser {

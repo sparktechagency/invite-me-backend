@@ -66,6 +66,9 @@ const userSchema = new Schema<TUser>(
             type: Boolean,
             default: false,
         },
+        loginThough: {
+            type: String,
+        },
     },
     {
         timestamps: true,

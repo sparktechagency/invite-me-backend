@@ -572,6 +572,7 @@ const loginWithOAuth = async (
                     profilePic: picture,
                     role,
                     isVerified: true,
+                    loginThough: provider,
                 });
 
                 await user.save({ session });

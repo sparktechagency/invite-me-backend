@@ -396,7 +396,9 @@ const getAllUser = async (
 
 // get single user
 const getSingleUser = async (id: string) => {
-    const result = await NormalUser.findById(id);
+    const result = await NormalUser.findById(id)
+        .populate('hotel', 'name')
+        .populate('user', 'loginThough');
     if (!result) {
         throw new AppError(httpStatus.NOT_FOUND, 'User not found');
     }
