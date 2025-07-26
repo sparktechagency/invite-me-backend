@@ -24,9 +24,9 @@ const initializeSocket = (server: HTTPServer) => {
         // });
         io.on('connection', async (socket: Socket) => {
             const currentUserId = socket.handshake.query.id as string;
-            if (!currentUserId) {
-                return;
-            }
+            // if (!currentUserId) {
+            //     return;
+            // }
             // const token = socket.handshake.headers['authorization'];
             // if (!token) {
             //     emitError(socket, {
