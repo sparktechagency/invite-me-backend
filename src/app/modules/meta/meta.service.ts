@@ -21,7 +21,7 @@ const getDashboardMetaData = async (query: Record<string, unknown>) => {
         );
         const hotelUserIds = hotelUsers.map((u) => u._id);
 
-        // 📊 Static counts
+        // Static counts
         totalUser = hotelUserIds.length;
         totalConnection = await Connection.countDocuments({
             status: ENUM_CONNECTION_STATUS.ACCEPTED,
@@ -29,7 +29,7 @@ const getDashboardMetaData = async (query: Record<string, unknown>) => {
             receiver: { $in: hotelUserIds },
         });
 
-        // ⚡ Real-time counts
+        // Real-time counts
         const activeProfileIds = onlineUserIds.filter((id: any) =>
             hotelUserIds.includes(id.toString())
         );
