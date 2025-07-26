@@ -16,7 +16,7 @@ export const updateHotelZodSchema = z.object({
     body: z.object({
         name: z.string().optional(),
         location: z.string().optional(),
-        wifiIp: z.string().ip('Invalid IP address').optional(),
+        wifiIp: z.string().optional(),
     }),
 });
 

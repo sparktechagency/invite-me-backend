@@ -1,10 +1,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { ENUM_CONNECTION_STATUS } from '../connection/connection.enum';
+import Connection from '../connection/connection.model';
 import NormalUser from '../normalUser/normalUser.model';
 
 const getDashboardMetaData = async () => {
     const totalUser = await NormalUser.countDocuments();
+    const totalConnection = await Connection.countDocuments({
+        status: ENUM_CONNECTION_STATUS.ACCEPTED,
+    });
     return {
         totalUser,
+        totalConnection,
     };
 };
 

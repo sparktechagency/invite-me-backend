@@ -6,6 +6,7 @@ import handleChat from './handleChat';
 import AppError from '../error/appError';
 import httpStatus from 'http-status';
 import { emitError } from './helper';
+import { calculateActiveStats } from './calculateActiveStats';
 // import { getCurrentUserId } from './getCurrentUserId';
 let io: IOServer;
 // import jwt, { JwtPayload } from 'jsonwebtoken';
@@ -79,16 +80,31 @@ const initializeSocket = (server: HTTPServer) => {
             socket.join(currentUserId as string);
             // set online user
             onlineUser.add(currentUserId);
-            // send to the client
-            io.emit('onlineUser', Array.from(onlineUser));
+
+            // Emit updated online users
+            const onlineUserArray = Array.from(onlineUser);
+            io.emit('onlineUser', onlineUserArray);
+
+            // Calculate and emit active stats
+            const { totalActiveUser, totalActiveConnection } =
+                await calculateActiveStats(onlineUserArray);
+            io.emit('activeStats', { totalActiveUser, totalActiveConnection });
 
             // handle chat -------------------
             await handleChat(io, socket, currentUserId as string);
 
-            socket.on('disconnect', () => {
+            socket.on('disconnect', async () => {
                 console.log('A user disconnected:', socket.id);
                 onlineUser.delete(currentUserId);
-                io.emit('onlineUser', Array.from(onlineUser));
+                const onlineUserArray = Array.from(onlineUser);
+                io.emit('onlineUser', onlineUserArray);
+
+                const { totalActiveUser, totalActiveConnection } =
+                    await calculateActiveStats(onlineUserArray);
+                io.emit('activeStats', {
+                    totalActiveUser,
+                    totalActiveConnection,
+                });
             });
         });
     }
