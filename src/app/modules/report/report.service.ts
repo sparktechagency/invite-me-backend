@@ -5,6 +5,9 @@ import NormalUser from '../normalUser/normalUser.model';
 import { IReport } from './report.interface';
 import Report from './report.model';
 import mongoose from 'mongoose';
+import { USER_ROLE } from '../user/user.constant';
+import { ENUM_NOTIFICATION_TYPE } from '../../utilities/enum';
+import sendNotification from '../../helper/sendNotification';
 
 const createReport = async (profileId: string, payload: IReport) => {
     if (new mongoose.Types.ObjectId(profileId) == payload.reportTo) {
@@ -17,7 +20,16 @@ const createReport = async (profileId: string, payload: IReport) => {
     if (!reportTo) {
         throw new AppError(httpStatus.NOT_FOUND, 'Reported user not found');
     }
+
     const result = await Report.create({ ...payload, reportFrom: profileId });
+    const notificaitonData = {
+        title: 'Profile Report',
+        message: 'A user report a profile',
+        receiver: USER_ROLE.superAdmin,
+        type: ENUM_NOTIFICATION_TYPE.GENERAL,
+    };
+
+    sendNotification(notificaitonData);
     return result;
 };
 

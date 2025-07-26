@@ -4,7 +4,7 @@ import sendResponse from '../../utilities/sendResponse';
 import MetaService from './meta.service';
 
 const getDashboardMetaData = catchAsync(async (req, res) => {
-    const result = await MetaService.getDashboardMetaData();
+    const result = await MetaService.getDashboardMetaData(req.query);
     sendResponse(res, {
         statusCode: httpStatus.OK,
         success: true,
