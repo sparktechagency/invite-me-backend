@@ -7,6 +7,8 @@ import AppError from '../error/appError';
 import httpStatus from 'http-status';
 import { emitError } from './helper';
 import { calculateActiveStats } from './calculateActiveStats';
+import { User } from '../modules/user/user.model';
+import { USER_ROLE } from '../modules/user/user.constant';
 // import { getCurrentUserId } from './getCurrentUserId';
 let io: IOServer;
 // import jwt, { JwtPayload } from 'jsonwebtoken';
@@ -78,17 +80,25 @@ const initializeSocket = (server: HTTPServer) => {
             }
             // create a room-------------------------
             socket.join(currentUserId as string);
-            // set online user
-            onlineUser.add(currentUserId);
+            const user = await User.findOne({
+                profileId: currentUserId,
+            }).select('role');
+            if (user?.role == USER_ROLE.user) {
+                // set online user
+                onlineUser.add(currentUserId);
 
-            // Emit updated online users
-            const onlineUserArray = Array.from(onlineUser);
-            io.emit('onlineUser', onlineUserArray);
+                // Emit updated online users
+                const onlineUserArray = Array.from(onlineUser);
+                io.emit('onlineUser', onlineUserArray);
 
-            // Calculate and emit active stats
-            const { totalActiveUser, totalActiveConnection } =
-                await calculateActiveStats(onlineUserArray);
-            io.emit('activeStats', { totalActiveUser, totalActiveConnection });
+                // Calculate and emit active stats
+                const { totalActiveUser, totalActiveConnection } =
+                    await calculateActiveStats(onlineUserArray);
+                io.emit('activeStats', {
+                    totalActiveUser,
+                    totalActiveConnection,
+                });
+            }
 
             // handle chat -------------------
             await handleChat(io, socket, currentUserId as string);
