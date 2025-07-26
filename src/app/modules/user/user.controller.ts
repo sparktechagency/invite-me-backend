@@ -10,40 +10,17 @@ import AppError from '../../error/appError';
 
 const registerUser = catchAsync(async (req, res) => {
     // const userIp = req.ip;
-    const normalizeIp = (ip: string) => ip.replace(/^::ffff:/, ''); // Normalize IPv6 addresses if necessary
+    const normalizeIp = (ip: string) => ip.replace(/^::ffff:/, '');
     const headerss: any = req.headers;
     const userIp = normalizeIp(
-        Array.isArray(headerss['x-forwarded-for']) // Check if x-forwarded-for is an array
-            ? headerss['x-forwarded-for'][0] // Use the first IP if it's an array
-            : typeof req.headers['x-forwarded-for'] === 'string' // If it's a string
-              ? req.headers['x-forwarded-for'].split(',')[0] // Split the string by commas and use the first IP
-              : req.socket.remoteAddress // Fallback to socket's remoteAddress if no x-forwarded-for header
+        Array.isArray(headerss['x-forwarded-for'])
+            ? headerss['x-forwarded-for'][0]
+            : typeof req.headers['x-forwarded-for'] === 'string'
+              ? req.headers['x-forwarded-for'].split(',')[0]
+              : req.socket.remoteAddress
     );
 
-    // const hotelAccessGranted = hotels.some((hotel) =>
-    //     checkIpInRange(userIp as string, hotel.wifiIp)
-    // );
-
-    // if (!hotelAccessGranted) {
-    //     return res
-    //         .status(403)
-    //         .json({ error: 'Access Denied: Invalid IP for any hotel' });
-    // }
-    // Find the hotel whose Wi-Fi IP range matches the user's IP
-
     const hotels = await Hotel.find();
-    // const matchedHotel = hotels.find((hotel) =>
-    //     checkIpInRange(userIp as string, hotel.wifiIp)
-    // );
-
-    // if (!matchedHotel) {
-    //     throw new AppError(
-    //         httpStatus.BAD_REQUEST,
-    //         'Access Denied: Invalid IP for any hotel'
-    //     );
-    // }
-
-    // req.body.hotel = matchedHotel._id;
 
     const isProduction = process.env.NODE_ENV === 'production';
 

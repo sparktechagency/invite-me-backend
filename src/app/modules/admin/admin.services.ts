@@ -61,7 +61,7 @@ const createAdmin = async (payload: IAdmin & { password: string }) => {
 };
 
 const updateAdminProfile = async (userId: string, payload: Partial<IAdmin>) => {
-    console.log('userid', userId);
+    console.log('admin', payload);
     const admin = await Admin.findById(userId);
     if (!admin) {
         throw new AppError(httpStatus.NOT_FOUND, 'Admin not found');

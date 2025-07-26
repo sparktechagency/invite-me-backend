@@ -8,9 +8,7 @@ export const createHotelZodSchema = z.object({
         location: z
             .string({ required_error: 'Location is required' })
             .min(1, 'Location is required'),
-        wifiIp: z
-            .string({ required_error: 'Wifi ip is required' })
-            .ip('Invalid IP address'),
+        wifiIp: z.string({ required_error: 'Wifi ip is required' }),
     }),
 });
 
