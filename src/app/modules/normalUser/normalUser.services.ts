@@ -319,6 +319,64 @@ const getAllUser = async (
             },
         });
 
+        // Lookup block relations
+        pipeline.push({
+            $lookup: {
+                from: 'blocks',
+                let: { otherUserId: '$_id' },
+                pipeline: [
+                    {
+                        $match: {
+                            $expr: {
+                                $or: [
+                                    {
+                                        $and: [
+                                            {
+                                                $eq: [
+                                                    '$blocker',
+                                                    currentUserId,
+                                                ],
+                                            },
+                                            {
+                                                $eq: [
+                                                    '$blocked',
+                                                    '$$otherUserId',
+                                                ],
+                                            },
+                                        ],
+                                    },
+                                    {
+                                        $and: [
+                                            {
+                                                $eq: [
+                                                    '$blocked',
+                                                    currentUserId,
+                                                ],
+                                            },
+                                            {
+                                                $eq: [
+                                                    '$blocker',
+                                                    '$$otherUserId',
+                                                ],
+                                            },
+                                        ],
+                                    },
+                                ],
+                            },
+                        },
+                    },
+                ],
+                as: 'blockRelation',
+            },
+        });
+
+        // Filter out those with block relationship
+        pipeline.push({
+            $match: {
+                blockRelation: { $eq: [] },
+            },
+        });
+
         // Project only needed fields from NormalUser, user, hotel and full connection
         pipeline.push({
             $project: {
