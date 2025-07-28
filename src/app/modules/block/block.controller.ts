@@ -1,24 +1,20 @@
-import httpStatus from "http-status";
-import catchAsync from "../../utilities/catchasync";
-import sendResponse from "../../utilities/sendResponse";
-import blockServices from "./block.service";
+import httpStatus from 'http-status';
+import catchAsync from '../../utilities/catchasync';
+import sendResponse from '../../utilities/sendResponse';
+import BlockServices from './block.service';
 
-const updateUserProfile = catchAsync(async (req, res) => {
-    const { files } = req;
-    if (files && typeof files === "object" && "profile_image" in files) {
-        req.body.profile_image = files["profile_image"][0].path;
-    }
-    const result = await blockServices.updateUserProfile(
+const blockUnblockUser = catchAsync(async (req, res) => {
+    const result = await BlockServices.blockUnblockUser(
         req.user.profileId,
-        req.body
+        req.params.id
     );
     sendResponse(res, {
         statusCode: httpStatus.OK,
         success: true,
-        message: "Profile updated successfully",
+        message: 'Profile updated successfully',
         data: result,
     });
 });
 
-const BlockController = { updateUserProfile };
+const BlockController = { blockUnblockUser };
 export default BlockController;
