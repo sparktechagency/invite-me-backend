@@ -645,6 +645,7 @@ const loginWithOAuth = async (
             accessToken,
             refreshToken,
             isRegistrationComplete: profile?.isRegistrationCompleted,
+            profileId: user.profileId,
         };
     } catch (error: any) {
         console.error('OAuth login error:', error);
