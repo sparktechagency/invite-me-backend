@@ -14,6 +14,7 @@ import { connectionRoutes } from '../modules/connection/connection.routes';
 import { reportRoutes } from '../modules/report/report.routes';
 import { conversationRoutes } from '../modules/conversation/conversation.routes';
 import { messageRoutes } from '../modules/message/message.routes';
+import { blockRoutes } from '../modules/block/block.routes';
 
 const router = Router();
 
@@ -83,6 +84,10 @@ const moduleRoutes = [
     {
         path: '/message',
         router: messageRoutes,
+    },
+    {
+        path: '/block',
+        router: blockRoutes,
     },
 ];
 

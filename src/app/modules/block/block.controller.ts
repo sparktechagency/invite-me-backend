@@ -11,8 +11,8 @@ const blockUnblockUser = catchAsync(async (req, res) => {
     sendResponse(res, {
         statusCode: httpStatus.OK,
         success: true,
-        message: 'Profile updated successfully',
-        data: result,
+        message: result.message,
+        data: result.result,
     });
 });
 

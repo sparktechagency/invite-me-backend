@@ -7,10 +7,10 @@ const blockUnblockUser = async (profileId: string, userId: string) => {
     });
     if (isBlocked) {
         const result = await Block.findByIdAndDelete(isBlocked._id);
-        return result;
+        return { result, message: 'User unblocked successfully' };
     }
     const result = await Block.create({ blocker: profileId, blocked: userId });
-    return result;
+    return { result, message: 'User is blocked' };
 };
 
 const BlockServices = {
