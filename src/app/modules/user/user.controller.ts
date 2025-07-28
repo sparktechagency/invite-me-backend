@@ -33,7 +33,7 @@ const registerUser = catchAsync(async (req, res) => {
         if (!matchedHotel) {
             throw new AppError(
                 httpStatus.BAD_REQUEST,
-                'Access Denied: Invalid IP for any hotel'
+                'Access Denied: Please connect our hotel wifi for registration'
             );
         }
 

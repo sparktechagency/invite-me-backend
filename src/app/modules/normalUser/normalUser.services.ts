@@ -213,7 +213,10 @@ const getAllUser = async (
 
         // Exclude current user
         pipeline.push({
-            $match: { _id: { $ne: currentUserId } },
+            $match: {
+                _id: { $ne: currentUserId },
+                isRegistrationCompleted: true,
+            },
         });
 
         // Filter by hotel if provided
