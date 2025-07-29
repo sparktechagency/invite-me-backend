@@ -9,7 +9,7 @@ const getChatList = catchAsync(async (req, res) => {
     );
 
     sendResponse(res, {
-        statusCode: 201,
+        statusCode: 200,
         success: true,
         message: 'Conversation retrieved successfully',
         data: result,

@@ -280,6 +280,8 @@ const getConversation = async (
     profileId: string,
     query: Record<string, unknown>
 ) => {
+    console.log('profileId', profileId);
+
     const filters = pick(query, ['searchTerm', 'email', 'name']);
     const paginationOptions = pick(query, [
         'page',
@@ -437,9 +439,9 @@ const getConversation = async (
                 preserveNullAndEmptyArrays: true,
             },
         },
-        {
-            ...(searchTerm
-                ? {
+        ...(searchTerm
+            ? [
+                  {
                       $match: {
                           $or: [
                               {
@@ -456,9 +458,9 @@ const getConversation = async (
                               },
                           ],
                       },
-                  }
-                : {}),
-        },
+                  },
+              ]
+            : []),
         {
             $project: {
                 _id: 1,
