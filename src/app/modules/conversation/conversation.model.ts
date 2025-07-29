@@ -16,7 +16,7 @@ const conversationSchema = new Schema<IConversation>(
         timestamps: true,
     }
 );
-
+//
 const Conversation = model<IConversation>('Conversation', conversationSchema);
 
 export default Conversation;
