@@ -4,6 +4,7 @@ import Conversation from '../modules/conversation/conversation.model';
 import Message from '../modules/message/message.model';
 import { emitError } from './helper';
 import { getSingleConversation } from '../helper/getSingleConversation';
+import { Block } from '../modules/block/block.model';
 
 const handleChat = async (
     io: IOServer,
@@ -29,6 +30,35 @@ const handleChat = async (
                 details: 'You must connected before send message',
             });
             return;
+        }
+
+        const block = await Block.findOne({
+            $or: [
+                { blocker: currentUserId, blocked: data.receiver },
+                { blocker: data.receiver, blocked: currentUserId },
+            ],
+        });
+        if (block) {
+            if (block?.blocked.toString() == currentUserId) {
+                emitError(socket, {
+                    code: 400,
+                    message: 'This user blocked you',
+                    type: 'general',
+                    details:
+                        "You can't able to send message to him/her becuase he/she blocked you",
+                });
+                return;
+            }
+            if (block.blocker.toString() == currentUserId) {
+                emitError(socket, {
+                    code: 400,
+                    message: 'You blocked this person',
+                    type: 'general',
+                    details:
+                        "You can't able to send message to him/her becuase you blocked this person",
+                });
+                return;
+            }
         }
 
         let conversation = await Conversation.findOne({
