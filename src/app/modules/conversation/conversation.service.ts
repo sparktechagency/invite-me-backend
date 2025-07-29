@@ -234,6 +234,10 @@ const getConversation = async (
             },
         },
 
+        // ...(searchConditions.length > 0
+        //     ? [{ $match: { $and: [searchConditions] } }]
+        //     : []),
+
         ...(searchConditions.length > 0
             ? [{ $match: { $and: [searchConditions] } }]
             : []),
