@@ -9,7 +9,7 @@ import seedSuperAdmin from './app/DB';
 import { initializeSocket } from './app/socket/socketManager';
 
 let myServer: HTTPServer | undefined;
-
+//
 async function main() {
     try {
         await mongoose.connect(config.database_url as string);
