@@ -239,7 +239,7 @@ const getConversation = async (
         //     : []),
 
         ...(searchConditions.length > 0
-            ? [{ $match: { $and: [searchConditions] } }]
+            ? [{ $match: { $and: [...searchConditions] } }]
             : []),
         {
             // $sort: { 'lastMessage.createdAt': -1 },
