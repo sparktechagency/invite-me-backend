@@ -206,6 +206,29 @@ const getConversation = async (
                 preserveNullAndEmptyArrays: true,
             },
         },
+
+        {
+            ...(searchTerm
+                ? {
+                      $match: {
+                          $or: [
+                              {
+                                  'otherUser.name': {
+                                      $regex: searchTerm,
+                                      $options: 'i',
+                                  },
+                              },
+                              {
+                                  'otherUser.email': {
+                                      $regex: searchTerm,
+                                      $options: 'i',
+                                  },
+                              },
+                          ],
+                      },
+                  }
+                : {}),
+        },
         {
             $project: {
                 _id: 1,
@@ -233,9 +256,9 @@ const getConversation = async (
         //     ? [{ $match: { $and: [searchConditions] } }]
         //     : []),
 
-        ...(searchConditions.length > 0
-            ? [{ $match: { $and: [...searchConditions] } }]
-            : []),
+        // ...(searchConditions.length > 0
+        //     ? [{ $match: { $and: [...searchConditions] } }]
+        //     : []),
         {
             // $sort: { 'lastMessage.createdAt': -1 },
             $sort: { updated_at: -1 },
