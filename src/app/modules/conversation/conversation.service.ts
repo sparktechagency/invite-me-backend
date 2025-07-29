@@ -109,12 +109,7 @@ const getConversation = async (
     const searchConditions = [];
     if (searchTerm) {
         searchConditions.push({
-            $or: [
-                'user.name',
-                'user.email',
-                'project.title',
-                'project.name',
-            ].map((field) => ({
+            $or: ['otherUser.name', 'otherUser.email'].map((field) => ({
                 [field]: { $regex: searchTerm, $options: 'i' },
             })),
         });
