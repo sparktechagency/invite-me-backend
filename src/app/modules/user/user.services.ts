@@ -17,11 +17,37 @@ import Admin from '../admin/admin.model';
 dotenv.config();
 
 const registerUser = async (userId: string, payload: INormalUser) => {
+    // if (payload.checkInDate && payload.checkOutDate) {
+    //     if (new Date(payload.checkOutDate) <= new Date(payload.checkInDate)) {
+    //         throw new AppError(
+    //             httpStatus.BAD_REQUEST,
+    //             'checkOutDate must be greater than checkInDate'
+    //         );
+    //     }
+    // }
+
     if (payload.checkInDate && payload.checkOutDate) {
-        if (new Date(payload.checkOutDate) <= new Date(payload.checkInDate)) {
+        const checkIn = new Date(payload.checkInDate);
+        const checkOut = new Date(payload.checkOutDate);
+
+        // 1. Checkout must be greater than check-in
+        if (checkOut <= checkIn) {
             throw new AppError(
                 httpStatus.BAD_REQUEST,
                 'checkOutDate must be greater than checkInDate'
+            );
+        }
+
+        // 2. Checkout must be tomorrow or later
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); // normalize to midnight
+        const tomorrow = new Date(today);
+        tomorrow.setDate(today.getDate() + 1);
+
+        if (checkOut < tomorrow) {
+            throw new AppError(
+                httpStatus.BAD_REQUEST,
+                'checkOutDate must be tomorrow or later'
             );
         }
     }
