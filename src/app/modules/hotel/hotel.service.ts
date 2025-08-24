@@ -8,7 +8,6 @@ import { deleteFileFromS3 } from '../../helper/deleteFromS3';
 import {
     canonicalizeIpv4Cidr,
     isValidIpv4Cidr,
-    isWifiFriendlyCidr,
 } from '../../utilities/net.util';
 
 // const isValidCIDR = (cidr: string): boolean => {
