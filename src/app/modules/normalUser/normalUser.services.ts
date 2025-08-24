@@ -203,9 +203,13 @@ const getAllUser = async (
         const searchTerm = (query.searchTerm as string) || '';
         const sortField = (query.sortBy as string) || 'createdAt';
         const sortOrder = query.sortOrder === 'asc' ? 1 : -1;
+        const userProfile = await NormalUser.findOne({ _id: profileId }).select(
+            'hotel'
+        );
+
         const hotelId = query.hotel
             ? new mongoose.Types.ObjectId(query.hotel as string)
-            : null;
+            : new mongoose.Types.ObjectId(userProfile?.hotel);
         const isBlockFilter =
             query.isBlocked !== undefined ? query.isBlocked === 'true' : null;
 
@@ -216,7 +220,6 @@ const getAllUser = async (
             $match: {
                 _id: { $ne: currentUserId },
                 isRegistrationCompleted: true,
-                hotel: hotelId,
             },
         });
 
