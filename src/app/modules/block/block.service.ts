@@ -7,7 +7,7 @@ const blockUnblockUser = async (profileId: string, userId: string) => {
         blocked: profileId,
         blocker: userId,
     });
-    if (!isMeBlocked) {
+    if (isMeBlocked) {
         throw new AppError(
             httpStatus.BAD_REQUEST,
             "You can't block that user , becuase this user already blocked you"
