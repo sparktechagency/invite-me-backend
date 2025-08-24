@@ -216,6 +216,7 @@ const getAllUser = async (
             $match: {
                 _id: { $ne: currentUserId },
                 isRegistrationCompleted: true,
+                hotel: hotelId,
             },
         });
 
