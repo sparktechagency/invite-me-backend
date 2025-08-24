@@ -5,7 +5,11 @@ import QueryBuilder from '../../builder/QueryBuilder';
 import AppError from '../../error/appError';
 import httpStatus from 'http-status';
 import { deleteFileFromS3 } from '../../helper/deleteFromS3';
-import { isValidIpv4Cidr, isWifiFriendlyCidr } from '../../utilities/net.util';
+import {
+    canonicalizeIpv4Cidr,
+    isValidIpv4Cidr,
+    isWifiFriendlyCidr,
+} from '../../utilities/net.util';
 
 // const isValidCIDR = (cidr: string): boolean => {
 //     const parts = cidr.split('/');
@@ -30,24 +34,29 @@ import { isValidIpv4Cidr, isWifiFriendlyCidr } from '../../utilities/net.util';
 // };
 
 const createHotel = async (payload: IHotel): Promise<IHotel> => {
-    // if (!isValidCIDR(payload.wifiIp)) {
+    // if (!isValidIpv4Cidr(payload.wifiIp)) {
     //     throw new AppError(
-    //         httpStatus.UNAVAILABLE_FOR_LEGAL_REASONS,
-    //         'Invalid CIDR format'
+    //         httpStatus.BAD_REQUEST,
+    //         'Invalid CIDR (IPv4) notation. Use e.g. "192.168.10.0/24".'
     //     );
     // }
+    // if (!isWifiFriendlyCidr(payload.wifiIp)) {
+    //     throw new AppError(
+    //         httpStatus.BAD_REQUEST,
+    //         'CIDR must be a private (RFC1918) or CGNAT (100.64.0.0/10) range.'
+    //     );
+    // }
+
     if (!isValidIpv4Cidr(payload.wifiIp)) {
         throw new AppError(
             httpStatus.BAD_REQUEST,
-            'Invalid CIDR (IPv4) notation. Use e.g. "192.168.10.0/24".'
+            'Invalid CIDR (IPv4) notation. Use e.g. "103.159.73.129/32" or "119.148.20.0/24".'
         );
     }
-    if (!isWifiFriendlyCidr(payload.wifiIp)) {
-        throw new AppError(
-            httpStatus.BAD_REQUEST,
-            'CIDR must be a private (RFC1918) or CGNAT (100.64.0.0/10) range.'
-        );
-    }
+
+    // Optional but recommended: store the canonical network address
+    payload.wifiIp = canonicalizeIpv4Cidr(payload.wifiIp);
+
     return await Hotel.create(payload);
 };
 

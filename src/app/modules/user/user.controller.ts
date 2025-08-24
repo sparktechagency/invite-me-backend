@@ -67,14 +67,15 @@ import { normalizeIp } from '../../utilities/net.util';
 
 const registerUser = catchAsync(async (req, res) => {
     // If trust proxy is set, req.ip is already sanitized by Express
-    const raw =
-        (req.headers['x-forwarded-for'] as string | undefined)
-            ?.split(',')[0]
-            ?.trim() ??
-        req.socket.remoteAddress ??
-        req.ip;
+    // const raw =
+    //     (req.headers['x-forwarded-for'] as string | undefined)
+    //         ?.split(',')[0]
+    //         ?.trim() ??
+    //     req.socket.remoteAddress ??
+    //     req.ip;
 
-    const userIp = normalizeIp(raw || '');
+    // const userIp = normalizeIp(raw || '');
+    const userIp = normalizeIp(req.ip ?? req.socket.remoteAddress ?? '');
 
     console.log('User ip========================>', userIp);
 
