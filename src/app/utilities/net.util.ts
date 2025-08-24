@@ -110,26 +110,36 @@ export function isValidIpv4Cidr(cidr: string): boolean {
 export function canonicalizeIpv4Cidr(cidr: string): string {
     const [ipStr, prefixStr] = cidr.split('/');
     const prefix = Number(prefixStr);
-    const ip = ipaddr.parse(ipStr) as ipaddr.IPv4;
-    const bytes = ip.toByteArray(); // [b0,b1,b2,b3]
 
-    const full = Math.floor(prefix / 8);
-    const rem = prefix % 8;
-
-    for (let i = 0; i < 4; i++) {
-        if (i < full) continue;
-        if (i === full && rem !== 0) {
-            const keep = (0xff << (8 - rem)) & 0xff;
-            bytes[i] = bytes[i] & keep;
-        } else {
-            bytes[i] = 0;
-        }
+    if (!Number.isInteger(prefix) || prefix < 1 || prefix > 32) {
+        throw new Error('Invalid IPv4 prefix length');
     }
 
-    const network = (ipaddr as any).IPv4.fromByteArray(
-        bytes as [number, number, number, number]
-    );
-    return `${network.toString()}/${prefix}`;
+    const parts = ipStr.split('.').map(Number);
+    if (
+        parts.length !== 4 ||
+        parts.some((n) => !Number.isInteger(n) || n < 0 || n > 255)
+    ) {
+        throw new Error('Invalid IPv4 address');
+    }
+
+    // Convert to 32-bit unsigned int
+    const ipNum =
+        ((parts[0] << 24) >>> 0) |
+        ((parts[1] << 16) >>> 0) |
+        ((parts[2] << 8) >>> 0) |
+        (parts[3] >>> 0);
+
+    // Build mask and apply
+    const mask = (0xffffffff << (32 - prefix)) >>> 0; // safe because 1..32
+    const networkNum = (ipNum & mask) >>> 0;
+
+    const a = (networkNum >>> 24) & 0xff;
+    const b = (networkNum >>> 16) & 0xff;
+    const c = (networkNum >>> 8) & 0xff;
+    const d = networkNum & 0xff;
+
+    return `${a}.${b}.${c}.${d}/${prefix}`;
 }
 
 // Check if clientIp ∈ cidr (IPv4 + IPv4-mapped IPv6)
