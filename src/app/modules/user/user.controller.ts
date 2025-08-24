@@ -76,6 +76,8 @@ const registerUser = catchAsync(async (req, res) => {
 
     const userIp = normalizeIp(raw || '');
 
+    console.log('User ip========================>', userIp);
+
     const hotels = await Hotel.find().lean();
 
     const isProduction = process.env.NODE_ENV === 'production';
