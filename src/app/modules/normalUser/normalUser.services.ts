@@ -5,7 +5,8 @@ import { INormalUser } from './normalUser.interface';
 import NormalUser from './normalUser.model';
 import mongoose from 'mongoose';
 import { JwtPayload } from 'jsonwebtoken';
-
+import cron from 'node-cron';
+import { User } from '../user/user.model';
 const updateUserProfile = async (id: string, payload: Partial<INormalUser>) => {
     if (payload.email) {
         throw new AppError(
@@ -549,6 +550,51 @@ const blockUnblockUser = async (ownId: string, id: string) => {
     }
 };
 
+const deleteUser = async (id: string) => {
+    const user = await NormalUser.findById(id);
+    if (!user) {
+        throw new AppError(httpStatus.NOT_FOUND, 'Profile not found');
+    }
+
+    // Delete associated User document
+    if (user.user) {
+        await User.findByIdAndDelete(user.user);
+    }
+
+    // Delete NormalUser
+    const reuslt = await NormalUser.findByIdAndDelete(id);
+    return reuslt;
+};
+
+// Run every day at 12:00 AM
+cron.schedule('0 0 * * *', async () => {
+    try {
+        const now = new Date();
+
+        // Find all normal users whose checkout date has expired
+        const expiredUsers = await NormalUser.find({
+            checkOutDate: { $lte: now },
+        });
+
+        if (expiredUsers.length) {
+            for (const user of expiredUsers) {
+                // Delete associated User document
+                if (user.user) {
+                    await User.findByIdAndDelete(user.user);
+                }
+
+                // Delete NormalUser
+                await NormalUser.findByIdAndDelete(user._id);
+            }
+            console.log(
+                `[CRON] Deleted ${expiredUsers.length} expired normal users.`
+            );
+        }
+    } catch (error) {
+        console.error('[CRON ERROR] NormalUser cleanup failed:', error);
+    }
+});
+
 const NormalUserServices = {
     updateUserProfile,
     getAllUser,
@@ -556,6 +602,7 @@ const NormalUserServices = {
     // connectionAddRemove,
     // acceptRejectConnectionRequest,
     blockUnblockUser,
+    deleteUser,
 };
 
 export default NormalUserServices;

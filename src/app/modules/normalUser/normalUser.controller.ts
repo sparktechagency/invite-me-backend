@@ -101,6 +101,16 @@ const blockUnblockUser = catchAsync(async (req, res) => {
         data: result,
     });
 });
+const deleteUser = catchAsync(async (req, res) => {
+    const result = await NormalUserServices.deleteUser(req.params.id);
+
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: 'User deleted successfully',
+        data: result,
+    });
+});
 
 const NormalUserController = {
     updateUserProfile,
@@ -109,6 +119,7 @@ const NormalUserController = {
     // connectionAddRemove,
     // acceptRejectConnectionRequest,
     blockUnblockUser,
+    deleteUser,
 };
 
 export default NormalUserController;
