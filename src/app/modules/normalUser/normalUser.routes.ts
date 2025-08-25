@@ -51,7 +51,7 @@ router.patch(
 router.delete(
     '/delete-guest/:id',
     auth(USER_ROLE.superAdmin, USER_ROLE.admin),
-    NormalUserController.blockUnblockUser
+    NormalUserController.deleteUser
 );
 
 export const normalUserRoutes = router;
