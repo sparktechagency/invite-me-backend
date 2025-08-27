@@ -42,7 +42,7 @@ const registerUser = async (userId: string, payload: INormalUser) => {
             );
         }
     }
-    payload.profile_image = payload?.newPictures[0] || '';
+    payload.profile_image = payload?.pictures[0] || '';
     const session = await mongoose.startSession();
     session.startTransaction();
     try {
