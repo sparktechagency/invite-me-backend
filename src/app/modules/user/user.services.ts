@@ -1,15 +1,15 @@
 /* eslint-disable no-unused-vars */
 
-import { User } from './user.model';
-import AppError from '../../error/appError';
 import httpStatus from 'http-status';
-import { INormalUser } from '../normalUser/normalUser.interface';
-import mongoose from 'mongoose';
-import { USER_ROLE } from './user.constant';
-import NormalUser from '../normalUser/normalUser.model';
-import cron from 'node-cron';
 import { JwtPayload } from 'jsonwebtoken';
+import mongoose from 'mongoose';
+import cron from 'node-cron';
+import AppError from '../../error/appError';
+import { INormalUser } from '../normalUser/normalUser.interface';
+import NormalUser from '../normalUser/normalUser.model';
 import SuperAdmin from '../superAdmin/superAdmin.model';
+import { USER_ROLE } from './user.constant';
+import { User } from './user.model';
 
 //TODO: ata kono todo na mojar baper hossa akana thaka jdoi aii 2 ta line remove kora dai tahola multer-s3 kaj korba nah
 import dotenv from 'dotenv';
@@ -42,6 +42,7 @@ const registerUser = async (userId: string, payload: INormalUser) => {
             );
         }
     }
+    payload.profile_image = payload?.newPictures[0] || '';
     const session = await mongoose.startSession();
     session.startTransaction();
     try {
