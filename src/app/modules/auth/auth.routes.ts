@@ -53,6 +53,7 @@ router.post(
     validateRequest(authValidations.resendResetCodeValidationSchema),
     authControllers.resendResetCode
 );
+router.post('/check-wifi-ip-range', authControllers.checkWifiIpRange);
 
 router.post('/oauth-login', authControllers.oAuthLogin);
 

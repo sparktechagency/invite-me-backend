@@ -4,6 +4,9 @@ import sendResponse from '../../utilities/sendResponse';
 import authServices from './auth.services';
 import AppError from '../../error/appError';
 import config from '../../config';
+import Hotel from '../hotel/hotel.model';
+import { normalizeIp } from '../../utilities/net.util';
+import { checkIpInRange } from '../../utilities/checkIpInRange';
 
 const loginUser = catchAsync(async (req, res) => {
     const result = await authServices.loginUserIntoDB(req.body);
@@ -127,6 +130,31 @@ const oAuthLogin = catchAsync(async (req, res) => {
         data: result,
     });
 });
+const checkWifiIpRange = catchAsync(async (req, res) => {
+    const userIp = normalizeIp(req.ip ?? req.socket.remoteAddress ?? '');
+
+    console.log('User ip========================>', userIp);
+
+    const hotels = await Hotel.find().select('wifiIp').lean();
+
+    const isProduction = process.env.NODE_ENV === 'production';
+
+    let isWifiRangeMatched = true;
+    if (isProduction) {
+        const matchedHotel = hotels.find((h) =>
+            checkIpInRange(userIp, h.wifiIp)
+        );
+        if (!matchedHotel) {
+            isWifiRangeMatched = false;
+        }
+    }
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: 'Wi-Fi range check completed',
+        data: { isWifiRangeMatched },
+    });
+});
 
 const authControllers = {
     loginUser,
@@ -138,6 +166,7 @@ const authControllers = {
     resendResetCode,
     resendVerifyCode,
     oAuthLogin,
+    checkWifiIpRange,
 };
 
 export default authControllers;
