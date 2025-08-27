@@ -58,15 +58,15 @@ const registerNormalUserValidationSchema = z.object({
             )
             .min(1, { message: 'At least one language is required' }),
 
-        checkInDate: z.preprocess(
-            (arg) => {
-                if (typeof arg === 'string' || arg instanceof Date)
-                    return new Date(arg);
-            },
-            z.date({
-                invalid_type_error: 'Invalid date format for checkInDate',
-            })
-        ),
+        // checkInDate: z.preprocess(
+        //     (arg) => {
+        //         if (typeof arg === 'string' || arg instanceof Date)
+        //             return new Date(arg);
+        //     },
+        //     z.date({
+        //         invalid_type_error: 'Invalid date format for checkInDate',
+        //     })
+        // ),
 
         checkOutDate: z.preprocess(
             (arg) => {

@@ -48,6 +48,7 @@ const NormalUserSchema = new Schema<INormalUser>(
         },
         checkInDate: {
             type: Date,
+            default: Date.now,
         },
         checkOutDate: {
             type: Date,
