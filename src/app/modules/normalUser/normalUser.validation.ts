@@ -18,12 +18,14 @@ const registerNormalUserValidationSchema = z.object({
                 required_error: 'Email is required',
                 invalid_type_error: 'Email must be a string',
             })
-            .email('Invalid email format'),
+            .optional(),
 
-        phone: z.string({
-            required_error: 'Phone is required',
-            invalid_type_error: 'Phone must be a string',
-        }),
+        phone: z
+            .string({
+                required_error: 'Phone is required',
+                invalid_type_error: 'Phone must be a string',
+            })
+            .optional(),
 
         gender: z.enum(Object.values(ENUM_GENDER) as [string, ...string[]]),
 
