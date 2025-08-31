@@ -62,11 +62,12 @@ const getAllUser = async (
             pipeline.push({
                 $match: { hotel: hotelId, isRegistrationCompleted: true },
             });
-        } else {
-            pipeline.push({
-                $match: { isRegistrationCompleted: true },
-            });
         }
+        // else {
+        //     pipeline.push({
+        //         $match: { isRegistrationCompleted: true },
+        //     });
+        // }
 
         // 2. Lookup User to get userDetails
         pipeline.push({
