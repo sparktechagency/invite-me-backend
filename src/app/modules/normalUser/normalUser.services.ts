@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import httpStatus from 'http-status';
+import { JwtPayload } from 'jsonwebtoken';
+import mongoose from 'mongoose';
+import cron from 'node-cron';
 import AppError from '../../error/appError';
+import { User } from '../user/user.model';
 import { INormalUser } from './normalUser.interface';
 import NormalUser from './normalUser.model';
-import mongoose from 'mongoose';
-import { JwtPayload } from 'jsonwebtoken';
-import cron from 'node-cron';
-import { User } from '../user/user.model';
 const updateUserProfile = async (id: string, payload: Partial<INormalUser>) => {
     if (payload.email) {
         throw new AppError(
@@ -60,7 +60,11 @@ const getAllUser = async (
         // 1. Filter by hotel if provided
         if (hotelId) {
             pipeline.push({
-                $match: { hotel: hotelId },
+                $match: { hotel: hotelId, isRegistrationCompleted: true },
+            });
+        } else {
+            pipeline.push({
+                $match: { isRegistrationCompleted: true },
             });
         }
 
