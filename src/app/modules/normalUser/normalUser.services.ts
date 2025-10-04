@@ -401,6 +401,7 @@ const getAllUser = async (
                 checkOutDate: 1,
                 checkInDate: 1,
                 address: 1,
+                interests: 1,
                 user: {
                     _id: 1,
                     isBlocked: 1,

@@ -501,12 +501,40 @@ const getConversation = async (
         { $limit: limit },
     ];
 
-    const [results, totalCount] = await Promise.all([
+    // const [results, totalCount] = await Promise.all([
+    //     Conversation.aggregate(pipeline),
+    //     Conversation.aggregate([...pipeline.slice(0, -2), { $count: 'total' }]),
+    // ]);
+
+    // const total = totalCount[0]?.total || 0;
+
+    // return {
+    //     meta: {
+    //         page,
+    //         limit,
+    //         total,
+    //         totalPage: Math.ceil(total / limit),
+    //     },
+    //     data: results,
+    // };
+
+    const [results, totalCount, unseenConversations] = await Promise.all([
         Conversation.aggregate(pipeline),
         Conversation.aggregate([...pipeline.slice(0, -2), { $count: 'total' }]),
+        Conversation.aggregate([
+            ...pipeline.slice(0, -3),
+            {
+                $project: {
+                    unseenMsg: { $ifNull: ['$unreadCountData.unreadCount', 0] },
+                },
+            },
+            { $match: { unseenMsg: { $gt: 0 } } },
+            { $count: 'totalUnseen' },
+        ]),
     ]);
 
     const total = totalCount[0]?.total || 0;
+    const totalUnseenConversations = unseenConversations[0]?.totalUnseen || 0;
 
     return {
         meta: {
@@ -514,6 +542,7 @@ const getConversation = async (
             limit,
             total,
             totalPage: Math.ceil(total / limit),
+            totalUnseenConversations,
         },
         data: results,
     };

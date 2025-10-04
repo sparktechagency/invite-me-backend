@@ -1,12 +1,12 @@
 /* eslint-disable no-console */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Server as IOServer, Socket } from 'socket.io';
 import { Server as HTTPServer } from 'http';
-import handleChat from './handleChat';
-import AppError from '../error/appError';
 import httpStatus from 'http-status';
-import { emitError } from './helper';
+import { Server as IOServer, Socket } from 'socket.io';
+import AppError from '../error/appError';
 import { calculateActiveStats } from './calculateActiveStats';
+import handleChat from './handleChat';
+import { emitError } from './helper';
 
 // import { getCurrentUserId } from './getCurrentUserId';
 let io: IOServer;
@@ -119,4 +119,4 @@ const getIO = () => {
     return io;
 };
 
-export { initializeSocket, getIO };
+export { getIO, initializeSocket };
