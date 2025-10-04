@@ -3,7 +3,11 @@ import { INotificationSetting } from './notificationSetting.interface';
 
 const notificationSettingSchema = new Schema<INotificationSetting>(
     {
-        user: { type: Schema.Types.ObjectId, required: true, ref: 'User' },
+        user: {
+            type: Schema.Types.ObjectId,
+            required: true,
+            ref: 'NormalUser',
+        },
         generalNotification: {
             type: Boolean,
             default: true,
@@ -20,8 +24,8 @@ const notificationSettingSchema = new Schema<INotificationSetting>(
     { timestamps: true }
 );
 
-const notificationSettingModel = model<INotificationSetting>(
+const NotificationSetting = model<INotificationSetting>(
     'NotificationSetting',
     notificationSettingSchema
 );
-export default notificationSettingModel;
+export default NotificationSetting;

@@ -1,20 +1,21 @@
 import { Router } from 'express';
-import { userRoutes } from '../modules/user/user.routes';
+import { AdminRoutes } from '../modules/admin/admin.routes';
 import { authRoutes } from '../modules/auth/auth.routes';
+import { bannerRoutes } from '../modules/banner/banner.routes';
+import { blockRoutes } from '../modules/block/block.routes';
+import { connectionRoutes } from '../modules/connection/connection.routes';
+import { conversationRoutes } from '../modules/conversation/conversation.routes';
+import { feedbackRoutes } from '../modules/feedback/feedback.routes';
+import { hotelRoutes } from '../modules/hotel/hotel.routes';
 import { ManageRoutes } from '../modules/manage-web/manage.routes';
+import { messageRoutes } from '../modules/message/message.routes';
+import { metaRoutes } from '../modules/meta/meta.routes';
 import { normalUserRoutes } from '../modules/normalUser/normalUser.routes';
 import { notificationRoutes } from '../modules/notification/notification.routes';
-import { bannerRoutes } from '../modules/banner/banner.routes';
-import { metaRoutes } from '../modules/meta/meta.routes';
-import { feedbackRoutes } from '../modules/feedback/feedback.routes';
-import { AdminRoutes } from '../modules/admin/admin.routes';
-import { hotelRoutes } from '../modules/hotel/hotel.routes';
-import { superAdminRoutes } from '../modules/superAdmin/superAdmin.routes';
-import { connectionRoutes } from '../modules/connection/connection.routes';
+import { notificationSettingRoutes } from '../modules/notificationSetting/notificationSetting.routes';
 import { reportRoutes } from '../modules/report/report.routes';
-import { conversationRoutes } from '../modules/conversation/conversation.routes';
-import { messageRoutes } from '../modules/message/message.routes';
-import { blockRoutes } from '../modules/block/block.routes';
+import { superAdminRoutes } from '../modules/superAdmin/superAdmin.routes';
+import { userRoutes } from '../modules/user/user.routes';
 
 const router = Router();
 
@@ -88,6 +89,10 @@ const moduleRoutes = [
     {
         path: '/block',
         router: blockRoutes,
+    },
+    {
+        path: '/notificationSetting',
+        router: notificationSettingRoutes,
     },
 ];
 
