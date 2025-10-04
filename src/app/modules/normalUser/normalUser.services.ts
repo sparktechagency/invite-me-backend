@@ -332,6 +332,15 @@ const getAllUser = async (
             },
         });
 
+        pipeline.push({
+            $match: {
+                $or: [
+                    { connection: { $eq: null } }, // no connection
+                    { 'connection.status': { $ne: 'ACCEPTED' } }, // not accepted
+                ],
+            },
+        });
+
         // Lookup block relations
         pipeline.push({
             $lookup: {
