@@ -3,15 +3,15 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable prefer-const */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import express, { Application, Request, Response, application } from 'express';
-import cors from 'cors';
 import cookieParser from 'cookie-parser';
-import globalErrorHandler from './app/middlewares/globalErrorHandler';
-import router from './app/routes';
-import notFound from './app/middlewares/notFound';
-const app: Application = express();
-import sendContactUsEmail from './app/helper/sendContactUsEmail';
+import cors from 'cors';
 import dotenv from 'dotenv';
+import express, { Application } from 'express';
+import sendContactUsEmail from './app/helper/sendContactUsEmail';
+import globalErrorHandler from './app/middlewares/globalErrorHandler';
+import notFound from './app/middlewares/notFound';
+import router from './app/routes';
+const app: Application = express();
 dotenv.config();
 
 // parser---
@@ -42,7 +42,7 @@ app.use('/', router);
 app.post('/contact-us', sendContactUsEmail);
 
 app.get('/', async (req, res) => {
-    res.send({ message: 'Welcome to dance club server' });
+    res.send({ message: 'Welcome to invite me server' });
 });
 
 // global error handler---

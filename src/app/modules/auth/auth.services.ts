@@ -1,22 +1,22 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable no-unused-vars */
-import httpStatus from 'http-status';
-import AppError from '../../error/appError';
-import { User } from '../user/user.model';
-import { TLoginUser } from './auth.interface';
-import { TUserRole } from '../user/user.interface';
-import { createToken, verifyToken } from '../user/user.utils';
-import config from '../../config';
-import { JwtPayload } from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
+import httpStatus from 'http-status';
+import { JwtPayload } from 'jsonwebtoken';
+import config from '../../config';
+import AppError from '../../error/appError';
 import resetPasswordEmailBody from '../../mailTemplate/resetPasswordEmailBody';
 import sendEmail from '../../utilities/sendEmail';
+import { TUserRole } from '../user/user.interface';
+import { User } from '../user/user.model';
+import { createToken, verifyToken } from '../user/user.utils';
+import { TLoginUser } from './auth.interface';
 
-import NormalUser from '../normalUser/normalUser.model';
 import appleSigninAuth from 'apple-signin-auth';
-import { OAuth2Client } from 'google-auth-library';
 import axios from 'axios';
+import { OAuth2Client } from 'google-auth-library';
 import mongoose from 'mongoose';
+import NormalUser from '../normalUser/normalUser.model';
 const generateVerifyCode = (): number => {
     return Math.floor(100000 + Math.random() * 900000);
 };
@@ -529,7 +529,10 @@ const loginWithOAuth = async (
         }
 
         // Find or create user
-        let user = await User.findOne({ [`${provider}Id`]: id });
+        let user = await User.findOne({
+            [`${provider}Id`]: id,
+            isExpired: false,
+        });
 
         // if (!user) {
         //     user = new User({

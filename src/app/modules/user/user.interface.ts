@@ -22,6 +22,7 @@ export interface TUser {
     googleId: string;
     isRegistrationCompleted: boolean;
     loginThough: string;
+    isExpired: boolean;
 }
 
 export interface TLoginUser {

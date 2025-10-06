@@ -58,11 +58,23 @@ const getAllUser = async (
         const pipeline: any[] = [];
 
         // 1. Filter by hotel if provided
+        // if (hotelId) {
+        //     pipeline.push({
+        //         $match: { hotel: hotelId, isRegistrationCompleted: true },
+        //     });
+        // }
+
+        const matchStage: any = {
+            isExpired: false,
+            isRegistrationCompleted: true,
+        };
         if (hotelId) {
-            pipeline.push({
-                $match: { hotel: hotelId, isRegistrationCompleted: true },
-            });
+            matchStage.hotel = hotelId;
         }
+        if (query.previewsGuest && query.previewsGuest == 'true') {
+            matchStage.isExpired = true;
+        }
+
         // else {
         //     pipeline.push({
         //         $match: { isRegistrationCompleted: true },
@@ -595,11 +607,13 @@ cron.schedule('0 0 * * *', async () => {
             for (const user of expiredUsers) {
                 // Delete associated User document
                 if (user.user) {
-                    await User.findByIdAndDelete(user.user);
+                    await User.findByIdAndUpdate(user.user, {
+                        isExpired: true,
+                    });
                 }
 
                 // Delete NormalUser
-                await NormalUser.findByIdAndDelete(user._id);
+                // await NormalUser.findByIdAndDelete(user._id);
             }
             console.log(
                 `[CRON] Deleted ${expiredUsers.length} expired normal users.`

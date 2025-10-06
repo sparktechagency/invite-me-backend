@@ -1,6 +1,6 @@
 import { model, Schema } from 'mongoose';
-import { INormalUser } from './normalUser.interface';
 import { ENUM_GENDER } from '../user/user.enum';
+import { INormalUser } from './normalUser.interface';
 
 const NormalUserSchema = new Schema<INormalUser>(
     {
