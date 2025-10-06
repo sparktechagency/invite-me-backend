@@ -13,8 +13,14 @@ const updateNotificationSetting = async (
     return result;
 };
 
+const getNotificationSetting = async (profileId: string) => {
+    const result = await NotificationSetting.findOne({ user: profileId });
+    return result;
+};
+
 const notificationSettingService = {
     updateNotificationSetting,
+    getNotificationSetting,
 };
 
 export default notificationSettingService;

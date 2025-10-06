@@ -10,4 +10,10 @@ router.patch(
     notificationSettingController.updateNotificationSetting
 );
 
+router.get(
+    '/get',
+    auth(USER_ROLE.superAdmin, USER_ROLE.user),
+    notificationSettingController.getNotificationSetting
+);
+
 export const notificationSettingRoutes = router;

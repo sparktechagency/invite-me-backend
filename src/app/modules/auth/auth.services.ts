@@ -17,6 +17,7 @@ import axios from 'axios';
 import { OAuth2Client } from 'google-auth-library';
 import mongoose from 'mongoose';
 import NormalUser from '../normalUser/normalUser.model';
+import NotificationSetting from '../notificationSetting/notificationSetting.model';
 const generateVerifyCode = (): number => {
     return Math.floor(100000 + Math.random() * 900000);
 };
@@ -603,6 +604,10 @@ const loginWithOAuth = async (
                     { new: true, runValidators: true, session }
                 );
 
+                await NotificationSetting.create([{ user: result[0]._id }], {
+                    session,
+                });
+
                 await session.commitTransaction();
                 session.endSession();
                 //
@@ -617,6 +622,8 @@ const loginWithOAuth = async (
             }
         }
 
+        // TODO: need to delete
+        await NotificationSetting.create({ user: user?.profileId });
         if (!user) {
             throw new AppError(404, 'User not found after creation');
         }

@@ -75,12 +75,6 @@ const getAllUser = async (
             matchStage.isExpired = true;
         }
 
-        // else {
-        //     pipeline.push({
-        //         $match: { isRegistrationCompleted: true },
-        //     });
-        // }
-
         // 2. Lookup User to get userDetails
         pipeline.push({
             $lookup: {
