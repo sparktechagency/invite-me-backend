@@ -15,14 +15,14 @@ const notificationSchema = new Schema<INotification>(
             type: String,
             required: true,
         },
-        // deleteBy: {
-        //     type: [String],
-        //     default: [],
-        // },
-        // seenBy: {
-        //     type: [String],
-        //     default: [],
-        // },
+        deleteBy: {
+            type: [String],
+            default: [],
+        },
+        seenBy: {
+            type: [String],
+            default: [],
+        },
     },
     //-------------------------
     {

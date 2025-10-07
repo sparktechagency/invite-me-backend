@@ -73,6 +73,10 @@ const userSchema = new Schema<TUser>(
             type: Boolean,
             default: false,
         },
+        playerIds: {
+            type: [String],
+            default: [],
+        },
     },
     {
         timestamps: true,

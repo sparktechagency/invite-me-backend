@@ -1,10 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import httpStatus from 'http-status';
-import AppError from '../../error/appError';
-import Connection from './connection.model';
-import { ENUM_CONNECTION_STATUS } from './connection.enum';
-import QueryBuilder from '../../builder/QueryBuilder';
 import mongoose from 'mongoose';
+import QueryBuilder from '../../builder/QueryBuilder';
+import AppError from '../../error/appError';
+import { checkShouldSendNotification } from '../../helper/checkShouldSendNotification';
+import { sendSinglePushNotification } from '../../helper/sendPushNotification';
+import NormalUser from '../normalUser/normalUser.model';
+import { ENUM_NOTIFICATION_TYPE } from '../notification/enum.notification';
+import Notification from '../notification/notification.model';
+import { ENUM_CONNECTION_STATUS } from './connection.enum';
+import Connection from './connection.model';
 // type
 type AcceptRejectStatus =
     | typeof ENUM_CONNECTION_STATUS.ACCEPTED
@@ -16,12 +21,50 @@ const connectionAddRemove = async (profileId: string, id: string) => {
             { sender: id, receiver: profileId },
         ],
     });
+    const user = await NormalUser.findById(profileId).select('name user');
 
     if (!connection) {
         const result = await Connection.create({
             sender: profileId,
             receiver: id,
         });
+        // const notificationData = {
+        //     title: 'New connection request',
+        //     message: `${user?.name} sent you connection request`,
+        //     receiver: id.toString(),
+        //     type: ENUM_NOTIFICATION_TYPE.matchNotification,
+        // };
+        // // TODO: need to add condition for is need to send or not
+        // await Notification.create(notificationData);
+        // await sendSinglePushNotification(
+        //     user!.user.toString(),
+        //     'New connection request!',
+        //     `${user?.name} sent you connection request`,
+        //     { connectionId: result._id }
+        // );
+
+        const shouldSend = await checkShouldSendNotification(
+            id.toString(),
+            ENUM_NOTIFICATION_TYPE.matchNotification
+        );
+
+        if (shouldSend) {
+            const notificationData = {
+                title: 'New connection request',
+                message: `${user?.name} sent you connection request`,
+                receiver: id.toString(),
+                type: ENUM_NOTIFICATION_TYPE.matchNotification,
+            };
+
+            await Notification.create(notificationData);
+            await sendSinglePushNotification(
+                user!.user.toString(),
+                'New connection request!',
+                `${user?.name} sent you connection request`,
+                { connectionId: result._id }
+            );
+        }
+
         return {
             result,
             message: 'Connection request sent successfully',

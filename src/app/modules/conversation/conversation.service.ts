@@ -501,33 +501,11 @@ const getConversation = async (
         { $limit: limit },
     ];
 
-    // const [results, totalCount] = await Promise.all([
-    //     Conversation.aggregate(pipeline),
-    //     Conversation.aggregate([...pipeline.slice(0, -2), { $count: 'total' }]),
-    // ]);
-
-    // const total = totalCount[0]?.total || 0;
-
-    // return {
-    //     meta: {
-    //         page,
-    //         limit,
-    //         total,
-    //         totalPage: Math.ceil(total / limit),
-    //     },
-    //     data: results,
-    // };
-
     const [results, totalCount, unseenConversations] = await Promise.all([
         Conversation.aggregate(pipeline),
         Conversation.aggregate([...pipeline.slice(0, -2), { $count: 'total' }]),
         Conversation.aggregate([
-            ...pipeline.slice(0, -3),
-            {
-                $project: {
-                    unseenMsg: { $ifNull: ['$unreadCountData.unreadCount', 0] },
-                },
-            },
+            ...pipeline.slice(0, -2),
             { $match: { unseenMsg: { $gt: 0 } } },
             { $count: 'totalUnseen' },
         ]),

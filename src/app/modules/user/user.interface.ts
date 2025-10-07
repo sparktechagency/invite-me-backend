@@ -23,6 +23,7 @@ export interface TUser {
     isRegistrationCompleted: boolean;
     loginThough: string;
     isExpired: boolean;
+    playerIds: string[];
 }
 
 export interface TLoginUser {
