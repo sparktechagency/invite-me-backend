@@ -1,16 +1,39 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Server as IOServer, Socket } from 'socket.io';
+import { checkShouldSendNotification } from '../helper/checkShouldSendNotification';
+import { getSingleConversation } from '../helper/getSingleConversation';
+import { sendSinglePushNotification } from '../helper/sendPushNotification';
+import { Block } from '../modules/block/block.model';
 import Conversation from '../modules/conversation/conversation.model';
 import Message from '../modules/message/message.model';
+import NormalUser from '../modules/normalUser/normalUser.model';
+import { ENUM_NOTIFICATION_TYPE } from '../modules/notification/enum.notification';
 import { emitError } from './helper';
-import { getSingleConversation } from '../helper/getSingleConversation';
-import { Block } from '../modules/block/block.model';
+
+const activeChats = new Map<string, string>();
 
 const handleChat = async (
     io: IOServer,
     socket: Socket,
     currentUserId: string
 ): Promise<void> => {
+    // ------------------- Track chat activity -------------------
+    socket.on('join-chat', (chatPartnerId: string) => {
+        if (currentUserId) {
+            activeChats.set(currentUserId, chatPartnerId);
+            console.log(
+                `User ${currentUserId} opened chat with ${chatPartnerId}`
+            );
+        }
+    });
+
+    socket.on('leave-chat', () => {
+        if (currentUserId) {
+            activeChats.delete(currentUserId);
+            console.log(`User ${currentUserId} left chat`);
+        }
+    });
+
     // new message -----------------------
     socket.on('send-message', async (data) => {
         if (!data.receiver) {
@@ -67,7 +90,6 @@ const handleChat = async (
                 { participants: data.receiver },
             ],
         });
-        console.log('conversation', conversation);
 
         if (!conversation) {
             conversation = await Conversation.create({
@@ -113,6 +135,40 @@ const handleChat = async (
             conversationSender
         );
         io.to(data?.receiver).emit('conversation', conversationReceiver);
+
+        // ------------------- Notification logic -------------------
+        const receiverChatPartner = activeChats.get(data.receiver);
+        const receiverIsActiveInChat = receiverChatPartner === currentUserId;
+
+        if (!receiverIsActiveInChat) {
+            const shouldSend = await checkShouldSendNotification(
+                data.receiver.toString(),
+                ENUM_NOTIFICATION_TYPE.messageNotification
+            );
+
+            if (shouldSend) {
+                // const notificationData = {
+                //     title: 'New message',
+                //     message: `${
+                //         data.senderName || 'Someone'
+                //     } sent you a message`,
+                //     receiver: data.receiver.toString(),
+                //     type: ENUM_NOTIFICATION_TYPE.messageNotification,
+                // };
+
+                // await Notification.create(notificationData);
+                const user = await NormalUser.findById(data.receiver);
+                if (!user) {
+                    return;
+                }
+                await sendSinglePushNotification(
+                    user.user.toString(),
+                    'Someone sends a chat message',
+                    `${user?.name || 'Someone'} sent you a new message`,
+                    { conversationId: conversation._id }
+                );
+            }
+        }
     });
 
     // send---------------------------------

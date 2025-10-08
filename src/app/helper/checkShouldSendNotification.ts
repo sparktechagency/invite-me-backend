@@ -7,7 +7,6 @@ export const checkShouldSendNotification = async (
 ): Promise<boolean> => {
     const setting = await NotificationSetting.findOne({ user: userId });
 
-    // If no setting exists, assume all notifications are enabled by default
     if (!setting) return true;
 
     switch (notificationType) {
@@ -21,7 +20,6 @@ export const checkShouldSendNotification = async (
             return setting.matchNotification;
 
         default:
-            // Unknown type — don't send just to be safe
             return false;
     }
 };

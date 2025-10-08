@@ -435,7 +435,8 @@ const loginWithOAuth = async (
     provider: string,
     token: string,
     role: TUserRole = 'user',
-    phoneType: string
+    phoneType: string,
+    playerId?: string
 ) => {
     let email, id, name, picture;
 
@@ -577,6 +578,7 @@ const loginWithOAuth = async (
                     role,
                     isVerified: true,
                     loginThough: provider,
+                    playerIds: playerId ? [playerId] : [],
                 });
 
                 await user.save({ session });
@@ -619,6 +621,26 @@ const loginWithOAuth = async (
                     error.message ||
                         'Something went wrong please try again letter'
                 );
+            }
+        } else {
+            if (playerId) {
+                const currentPlayerIds = user.playerIds || [];
+
+                // If already exists, remove it first (to avoid duplicates)
+                const filtered = currentPlayerIds.filter(
+                    (id) => id !== playerId
+                );
+
+                // Add the new one to the end
+                filtered.push(playerId);
+
+                // If length > 3, remove from beginning
+                if (filtered.length > 3) {
+                    filtered.shift();
+                }
+
+                user.playerIds = filtered;
+                await user.save();
             }
         }
 

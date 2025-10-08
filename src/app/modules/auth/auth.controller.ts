@@ -1,12 +1,12 @@
 import httpStatus from 'http-status';
-import catchAsync from '../../utilities/catchasync';
-import sendResponse from '../../utilities/sendResponse';
-import authServices from './auth.services';
-import AppError from '../../error/appError';
 import config from '../../config';
-import Hotel from '../hotel/hotel.model';
-import { normalizeIp } from '../../utilities/net.util';
+import AppError from '../../error/appError';
+import catchAsync from '../../utilities/catchasync';
 import { checkIpInRange } from '../../utilities/checkIpInRange';
+import { normalizeIp } from '../../utilities/net.util';
+import sendResponse from '../../utilities/sendResponse';
+import Hotel from '../hotel/hotel.model';
+import authServices from './auth.services';
 
 const loginUser = catchAsync(async (req, res) => {
     const result = await authServices.loginUserIntoDB(req.body);
@@ -108,7 +108,7 @@ const resendVerifyCode = catchAsync(async (req, res) => {
 });
 
 const oAuthLogin = catchAsync(async (req, res) => {
-    const { provider, token, role, phoneType } = req.body;
+    const { provider, token, role, phoneType, playerId } = req.body;
     if (!['google', 'apple', 'facebook'].includes(provider)) {
         throw new AppError(httpStatus.BAD_REQUEST, 'Invalid provider');
     }
@@ -116,7 +116,8 @@ const oAuthLogin = catchAsync(async (req, res) => {
         provider,
         token,
         role,
-        phoneType
+        phoneType,
+        playerId
     );
     res.cookie('refresh-token', result.refreshToken, {
         httpOnly: true,

@@ -7,7 +7,6 @@ import { checkShouldSendNotification } from '../../helper/checkShouldSendNotific
 import { sendSinglePushNotification } from '../../helper/sendPushNotification';
 import NormalUser from '../normalUser/normalUser.model';
 import { ENUM_NOTIFICATION_TYPE } from '../notification/enum.notification';
-import Notification from '../notification/notification.model';
 import { ENUM_CONNECTION_STATUS } from './connection.enum';
 import Connection from './connection.model';
 // type
@@ -49,18 +48,18 @@ const connectionAddRemove = async (profileId: string, id: string) => {
         );
 
         if (shouldSend) {
-            const notificationData = {
-                title: 'New connection request',
-                message: `${user?.name} sent you connection request`,
-                receiver: id.toString(),
-                type: ENUM_NOTIFICATION_TYPE.matchNotification,
-            };
+            // const notificationData = {
+            //     title: 'Someone invites you to connect',
+            //     message: `Tap to accept or ignore`,
+            //     receiver: id.toString(),
+            //     type: ENUM_NOTIFICATION_TYPE.matchNotification,
+            // };
 
-            await Notification.create(notificationData);
+            // await Notification.create(notificationData);
             await sendSinglePushNotification(
                 user!.user.toString(),
-                'New connection request!',
-                `${user?.name} sent you connection request`,
+                'Someone invites you to connect',
+                `Tap to accept or ignore`,
                 { connectionId: result._id }
             );
         }
@@ -106,11 +105,11 @@ const acceptRejectConnectionRequest = async (
     id: string,
     status: AcceptRejectStatus
 ) => {
-    const connection = await Connection.findOne({
+    const connection: any = await Connection.findOne({
         _id: id,
         receiver: profileId,
         status: ENUM_CONNECTION_STATUS.PENDING,
-    });
+    }).populate({ path: 'sender', select: 'name user' });
 
     if (!connection) {
         throw new AppError(
@@ -122,6 +121,29 @@ const acceptRejectConnectionRequest = async (
     if (status === ENUM_CONNECTION_STATUS.ACCEPTED) {
         connection.status = ENUM_CONNECTION_STATUS.ACCEPTED;
         await connection.save();
+
+        const shouldSend = await checkShouldSendNotification(
+            id.toString(),
+            ENUM_NOTIFICATION_TYPE.matchNotification
+        );
+        if (shouldSend) {
+            // const notificationData = {
+            //     title: 'Someone invites you to connect',
+            //     message: `Tap to accept or ignore`,
+            //     receiver: id.toString(),
+            //     type: ENUM_NOTIFICATION_TYPE.matchNotification,
+            // };
+
+            // await Notification.create(notificationData);
+
+            await sendSinglePushNotification(
+                connection.sender!.user.toString(),
+                `${connection.sender?.name} accepted your invitation`,
+                `You’re now connected! Start planning together`,
+                { connectionId: connection._id }
+            );
+        }
+
         return {
             result: connection,
             message: 'Connection request accepted successfully.',
