@@ -69,6 +69,7 @@ const connectionAddRemove = async (profileId: string, id: string) => {
                 { connectionId: result._id }
             );
         }
+        console.log('notifiaciaotn send===>');
         sendNotificationCount(user?._id.toString());
 
         return {
