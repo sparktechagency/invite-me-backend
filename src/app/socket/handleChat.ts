@@ -163,8 +163,8 @@ const handleChat = async (
                 }
                 await sendSinglePushNotification(
                     user.user.toString(),
-                    'Someone sends a chat message',
-                    `${user?.name || 'Someone'} sent you a new message`,
+                    'Ping! You’ve got a message',
+                    `From ${user?.name || 'Someone'}  – open to see it `,
                     { conversationId: conversation._id }
                 );
             }
