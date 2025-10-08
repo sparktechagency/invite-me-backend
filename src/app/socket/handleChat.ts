@@ -2,6 +2,7 @@
 import { Server as IOServer, Socket } from 'socket.io';
 import { checkShouldSendNotification } from '../helper/checkShouldSendNotification';
 import { getSingleConversation } from '../helper/getSingleConversation';
+import sendNotificationCount from '../helper/sendNotificationCount';
 import { sendSinglePushNotification } from '../helper/sendPushNotification';
 import { Block } from '../modules/block/block.model';
 import Conversation from '../modules/conversation/conversation.model';
@@ -136,6 +137,8 @@ const handleChat = async (
         );
         io.to(data?.receiver).emit('conversation', conversationReceiver);
 
+        sendNotificationCount(data.received);
+
         // ------------------- Notification logic -------------------
         const receiverChatPartner = activeChats.get(data.receiver);
         const receiverIsActiveInChat = receiverChatPartner === currentUserId;
@@ -186,6 +189,8 @@ const handleChat = async (
             conversationId,
             msgByUserId
         );
+
+        sendNotificationCount(currentUserId);
 
         io.to(currentUserId as string).emit('conversation', conversationSender);
         io.to(msgByUserId).emit('conversation', conversationReceiver);

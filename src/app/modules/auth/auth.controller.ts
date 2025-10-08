@@ -149,6 +149,7 @@ const checkWifiIpRange = catchAsync(async (req, res) => {
             isWifiRangeMatched = false;
         }
     }
+    console.log('isssisisis', isWifiRangeMatched);
     sendResponse(res, {
         statusCode: httpStatus.OK,
         success: true,

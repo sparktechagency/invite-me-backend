@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import httpStatus from 'http-status';
-import catchAsync from '../../utilities/catchasync';
-import sendResponse from '../../utilities/sendResponse';
-import userServices from './user.services';
-import { getCloudFrontUrl } from '../../helper/mutler-s3-uploader';
-import Hotel from '../hotel/hotel.model';
-import { checkIpInRange } from '../../utilities/checkIpInRange';
 import AppError from '../../error/appError';
+import { getCloudFrontUrl } from '../../helper/mutler-s3-uploader';
+import catchAsync from '../../utilities/catchasync';
+import { checkIpInRange } from '../../utilities/checkIpInRange';
 import { normalizeIp } from '../../utilities/net.util';
+import sendResponse from '../../utilities/sendResponse';
+import Hotel from '../hotel/hotel.model';
+import userServices from './user.services';
 
 // const registerUser = catchAsync(async (req, res) => {
 //     // const userIp = req.ip;
@@ -151,10 +151,7 @@ const changeUserStatus = catchAsync(async (req, res) => {
     });
 });
 const deleteUserAccount = catchAsync(async (req, res) => {
-    const result = await userServices.deleteUserAccount(
-        req.user,
-        req.body.password
-    );
+    const result = await userServices.deleteUserAccount(req.user);
 
     sendResponse(res, {
         statusCode: httpStatus.OK,

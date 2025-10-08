@@ -4,6 +4,7 @@ import mongoose from 'mongoose';
 import QueryBuilder from '../../builder/QueryBuilder';
 import AppError from '../../error/appError';
 import { checkShouldSendNotification } from '../../helper/checkShouldSendNotification';
+import sendNotificationCount from '../../helper/sendNotificationCount';
 import { sendSinglePushNotification } from '../../helper/sendPushNotification';
 import NormalUser from '../normalUser/normalUser.model';
 import { ENUM_NOTIFICATION_TYPE } from '../notification/enum.notification';
@@ -21,7 +22,12 @@ const connectionAddRemove = async (profileId: string, id: string) => {
         ],
     });
     const user = await NormalUser.findById(profileId).select('name user');
-
+    if (!user) {
+        throw new AppError(
+            httpStatus.NOT_FOUND,
+            'user not found for send notification'
+        );
+    }
     if (!connection) {
         const result = await Connection.create({
             sender: profileId,
@@ -63,6 +69,7 @@ const connectionAddRemove = async (profileId: string, id: string) => {
                 { connectionId: result._id }
             );
         }
+        sendNotificationCount(user?._id.toString());
 
         return {
             result,

@@ -1,12 +1,10 @@
-import validateRequest from '../../middlewares/validateRequest';
-import userControllers from './user.controller';
-import { Router } from 'express';
-import userValidations from './user.validation';
-import normalUserValidations from '../normalUser/normalUser.validation';
-import auth from '../../middlewares/auth';
-import { USER_ROLE } from './user.constant';
-import { Request, Response, NextFunction } from 'express';
+import { NextFunction, Request, Response, Router } from 'express';
 import { uploadFile } from '../../helper/mutler-s3-uploader';
+import auth from '../../middlewares/auth';
+import validateRequest from '../../middlewares/validateRequest';
+import normalUserValidations from '../normalUser/normalUser.validation';
+import { USER_ROLE } from './user.constant';
+import userControllers from './user.controller';
 
 const router = Router();
 
@@ -37,7 +35,6 @@ router.patch(
 router.delete(
     '/delete-account',
     auth(USER_ROLE.user),
-    validateRequest(userValidations.deleteUserAccountValidationSchema),
     userControllers.deleteUserAccount
 );
 

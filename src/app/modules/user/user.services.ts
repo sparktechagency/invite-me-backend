@@ -79,14 +79,11 @@ const registerUser = async (userId: string, payload: INormalUser) => {
     }
 };
 
-const deleteUserAccount = async (user: JwtPayload, password: string) => {
+const deleteUserAccount = async (user: JwtPayload) => {
     const userData = await User.findById(user.id);
 
     if (!userData) {
         throw new AppError(httpStatus.NOT_FOUND, 'User not found');
-    }
-    if (!(await User.isPasswordMatched(password, userData?.password))) {
-        throw new AppError(httpStatus.FORBIDDEN, 'Password do not match');
     }
 
     await NormalUser.findByIdAndDelete(user.profileId);

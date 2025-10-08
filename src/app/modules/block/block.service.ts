@@ -1,5 +1,7 @@
 import httpStatus from 'http-status';
 import AppError from '../../error/appError';
+import Connection from '../connection/connection.model';
+import Conversation from '../conversation/conversation.model';
 import { Block } from './block.model';
 
 const blockUnblockUser = async (profileId: string, userId: string) => {
@@ -10,7 +12,7 @@ const blockUnblockUser = async (profileId: string, userId: string) => {
     if (isMeBlocked) {
         throw new AppError(
             httpStatus.BAD_REQUEST,
-            "You can't block that user , becuase this user already blocked you"
+            "You can't block that user , because this user already blocked you"
         );
     }
     const isBlocked = await Block.findOne({
@@ -22,6 +24,15 @@ const blockUnblockUser = async (profileId: string, userId: string) => {
         return { result, message: 'User unblocked successfully' };
     }
     const result = await Block.create({ blocker: profileId, blocked: userId });
+    await Conversation.findOneAndDelete({
+        participants: { $all: [profileId, userId] },
+    });
+    await Connection.findOneAndDelete({
+        $or: [
+            { sender: profileId, receiver: userId },
+            { sender: userId, receiver: profileId },
+        ],
+    });
     return { result, message: 'User is blocked' };
 };
 
