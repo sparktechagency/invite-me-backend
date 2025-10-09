@@ -147,18 +147,8 @@ const handleChat = async (
             );
 
             if (shouldSend) {
-                // const notificationData = {
-                //     title: 'New message',
-                //     message: `${
-                //         data.senderName || 'Someone'
-                //     } sent you a message`,
-                //     receiver: data.receiver.toString(),
-                //     type: ENUM_NOTIFICATION_TYPE.messageNotification,
-                // };
-
                 // await Notification.create(notificationData);
                 const user = await NormalUser.findById(data.receiver);
-                console.log('how care dkjd', user);
                 if (!user) {
                     return;
                 }
