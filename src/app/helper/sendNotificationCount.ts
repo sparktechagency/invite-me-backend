@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { ENUM_CONNECTION_STATUS } from '../modules/connection/connection.enum';
 import Connection from '../modules/connection/connection.model';
 import Conversation from '../modules/conversation/conversation.model';
 import { getIO } from '../socket/socketManager';
@@ -7,6 +8,7 @@ const sendNotificationCount = async (userId: string) => {
     const io = getIO();
     const pendingConnection = await Connection.countDocuments({
         receiver: userId,
+        status: ENUM_CONNECTION_STATUS.PENDING,
     });
 
     const userObjectId = new mongoose.Types.ObjectId(userId);
