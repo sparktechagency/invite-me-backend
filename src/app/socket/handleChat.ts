@@ -161,6 +161,7 @@ const handleChat = async (
 
                 // await Notification.create(notificationData);
                 const user = await NormalUser.findById(data.receiver);
+                console.log('how care dkjd', user);
                 if (!user) {
                     return;
                 }

@@ -20,5 +20,10 @@ router.delete(
     auth(USER_ROLE.user, USER_ROLE.superAdmin),
     notificationController.deleteNotification
 );
+router.get(
+    '/count',
+    auth(USER_ROLE.user),
+    notificationController.sendNotificationCountFromDB
+);
 //
 export const notificationRoutes = router;

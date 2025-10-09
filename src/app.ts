@@ -8,6 +8,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import express, { Application } from 'express';
 import sendContactUsEmail from './app/helper/sendContactUsEmail';
+import { sendSinglePushNotification } from './app/helper/sendPushNotification';
 import globalErrorHandler from './app/middlewares/globalErrorHandler';
 import notFound from './app/middlewares/notFound';
 import router from './app/routes';
@@ -41,7 +42,13 @@ app.use('/uploads', express.static('uploads'));
 app.use('/', router);
 app.post('/contact-us', sendContactUsEmail);
 
-app.get('/', async (req, res) => {
+app.get('/noti', async (req, res) => {
+    await sendSinglePushNotification(
+        '68e63a7e1030eb37d1010afd',
+        'Someone invites you to connect',
+        `Tap to accept or ignore`,
+        { connectionId: 'kdjfkdj' }
+    );
     res.send({ message: 'Welcome to invite me server' });
 });
 

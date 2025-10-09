@@ -14,7 +14,7 @@ const sendNotification = async (
     data: NotificationData = {}
 ) => {
     if (!ONESIGNAL_APP_ID || !ONESIGNAL_API_KEY) {
-        throw new Error('Missing OneSignal credentials');
+        throw new Error('Missing OneSignal credentials, Please check your env');
     }
 
     if (playerIds.length === 0) {
@@ -57,6 +57,7 @@ export const sendSinglePushNotification = async (
     data: NotificationData = {}
 ) => {
     const user = await User.findById(userId).select('playerIds');
+    console.log('djfkdjfdj', user);
     if (!user || !user.playerIds.length) return;
     return sendNotification(user.playerIds, title, message, data);
 };

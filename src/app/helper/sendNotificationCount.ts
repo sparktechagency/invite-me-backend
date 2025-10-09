@@ -40,10 +40,12 @@ const sendNotificationCount = async (userId: string) => {
     ]);
 
     const totalUnreadConversations = result[0]?.totalUnreadConversations || 0;
+
     io.to(userId.toString()).emit(
         'notificationCount',
         totalUnreadConversations + pendingConnection
     );
+    return totalUnreadConversations + pendingConnection;
 };
 
 export default sendNotificationCount;

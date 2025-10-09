@@ -117,7 +117,9 @@ const acceptRejectConnectionRequest = async (
         _id: id,
         receiver: profileId,
         status: ENUM_CONNECTION_STATUS.PENDING,
-    }).populate({ path: 'sender', select: 'name user' });
+    })
+        .populate({ path: 'sender', select: 'name user' })
+        .populate({ path: 'receiver', select: 'name user' });
 
     if (!connection) {
         throw new AppError(
@@ -146,7 +148,7 @@ const acceptRejectConnectionRequest = async (
 
             await sendSinglePushNotification(
                 connection.sender!.user.toString(),
-                `${connection.sender?.name} accepted your invitation`,
+                `${connection.receiver?.name} accepted your invitation`,
                 `You’re now connected! Start planning together`,
                 { connectionId: connection._id }
             );

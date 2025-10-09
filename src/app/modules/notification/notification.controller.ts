@@ -1,7 +1,7 @@
+import sendNotificationCount from '../../helper/sendNotificationCount';
 import catchAsync from '../../utilities/catchasync';
 import sendResponse from '../../utilities/sendResponse';
 import notificationService from './notification.services';
-
 const getAllNotification = catchAsync(async (req, res) => {
     const result = await notificationService.getAllNotificationFromDB(
         req?.query,
@@ -40,10 +40,21 @@ const deleteNotification = catchAsync(async (req, res) => {
     });
 });
 
+//
+const sendNotificationCountFromDB = catchAsync(async (req, res) => {
+    const result = await sendNotificationCount(req.user.profileId);
+    sendResponse(res, {
+        statusCode: 200,
+        success: true,
+        message: 'Notification count retrieved',
+        data: result,
+    });
+});
 const notificationController = {
     getAllNotification,
     seeNotification,
     deleteNotification,
+    sendNotificationCountFromDB,
 };
 
 export default notificationController;
