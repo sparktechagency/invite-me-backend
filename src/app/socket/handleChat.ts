@@ -22,9 +22,6 @@ const handleChat = async (
     socket.on('join-chat', (chatPartnerId: string) => {
         if (currentUserId) {
             activeChats.set(currentUserId, chatPartnerId);
-            console.log(
-                `User ${currentUserId} opened chat with ${chatPartnerId}`
-            );
         }
     });
 
@@ -137,7 +134,7 @@ const handleChat = async (
         );
         io.to(data?.receiver).emit('conversation', conversationReceiver);
 
-        sendNotificationCount(data.received);
+        sendNotificationCount(data.receiver);
 
         // ------------------- Notification logic -------------------
         const receiverChatPartner = activeChats.get(data.receiver);

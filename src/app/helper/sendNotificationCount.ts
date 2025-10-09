@@ -47,6 +47,7 @@ const sendNotificationCount = async (userId: string) => {
         'notificationCount',
         totalUnreadConversations + pendingConnection
     );
+    console.log('count===', totalUnreadConversations + pendingConnection);
     return totalUnreadConversations + pendingConnection;
 };
 
