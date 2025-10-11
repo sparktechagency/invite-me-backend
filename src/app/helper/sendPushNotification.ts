@@ -57,7 +57,6 @@ export const sendSinglePushNotification = async (
     data: NotificationData = {}
 ) => {
     const user = await User.findById(userId).select('playerIds');
-    console.log('djfkdjfdj', user);
     if (!user || !user.playerIds.length) return;
     return sendNotification(user.playerIds, title, message, data);
 };

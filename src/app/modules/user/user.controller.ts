@@ -84,9 +84,11 @@ const registerUser = catchAsync(async (req, res) => {
     const isProduction = process.env.NODE_ENV === 'production';
 
     if (isProduction) {
+        console.log('nice ot meet you man');
         const matchedHotel = hotels.find((h) =>
             checkIpInRange(userIp, h.wifiIp)
         );
+
         if (!matchedHotel) {
             throw new AppError(
                 httpStatus.FORBIDDEN,
