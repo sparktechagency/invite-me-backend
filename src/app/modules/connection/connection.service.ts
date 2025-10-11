@@ -21,7 +21,7 @@ const connectionAddRemove = async (profileId: string, id: string) => {
             { sender: id, receiver: profileId },
         ],
     });
-    const user = await NormalUser.findById(profileId).select('name user');
+    const user = await NormalUser.findById(id).select('name user');
     if (!user) {
         throw new AppError(
             httpStatus.NOT_FOUND,
