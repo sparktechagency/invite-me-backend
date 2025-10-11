@@ -81,7 +81,7 @@ const registerUser = catchAsync(async (req, res) => {
 
     const hotels = await Hotel.find().lean();
 
-    const isProduction = process.env.NODE_ENV === 'production';
+    const isProduction = process.env.NODE_ENV == 'production';
 
     if (isProduction) {
         console.log('nice ot meet you man');
