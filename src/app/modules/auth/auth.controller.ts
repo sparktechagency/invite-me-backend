@@ -134,11 +134,9 @@ const oAuthLogin = catchAsync(async (req, res) => {
 const checkWifiIpRange = catchAsync(async (req, res) => {
     const userIp = normalizeIp(req.ip ?? req.socket.remoteAddress ?? '');
 
-    console.log('User ip========================>', userIp);
-
     const hotels = await Hotel.find().select('wifiIp').lean();
 
-    const isProduction = process.env.NODE_ENV == 'production';
+    const isProduction = process.env.NODE_ENV === 'production';
 
     let isWifiRangeMatched = true;
     if (isProduction) {
