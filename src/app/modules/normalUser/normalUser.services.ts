@@ -73,6 +73,8 @@ const getAllUser = async (
         }
         if (query.previewsGuest && query.previewsGuest == 'true') {
             matchStage.isExpired = true;
+        } else {
+            matchStage.isExpired = false;
         }
 
         // 2. Lookup User to get userDetails
@@ -232,6 +234,7 @@ const getAllUser = async (
             $match: {
                 _id: { $ne: currentUserId },
                 isRegistrationCompleted: true,
+                checkOutDate: { $gt: new Date() },
             },
         });
 
