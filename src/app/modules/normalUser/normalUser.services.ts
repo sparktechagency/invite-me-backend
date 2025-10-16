@@ -717,8 +717,9 @@ const getSingleUser = async (userData: JwtPayload, id: string) => {
                             },
                         },
                         { $project: { status: 1, sender: 1, receiver: 1 } },
+                        { $limit: 1 }, // ensures only one connection
                     ],
-                    as: 'connection',
+                    as: 'connectionArray',
                 },
             },
             {
@@ -736,7 +737,23 @@ const getSingleUser = async (userData: JwtPayload, id: string) => {
             throw new AppError(httpStatus.NOT_FOUND, 'User not found');
         }
 
-        return result[0];
+        const user = result[0];
+
+        // convert connection array to single object (or null if no connection)
+        const connection =
+            user.connectionArray.length > 0 ? user.connectionArray[0] : null;
+
+        // delete the temporary array to clean up the response
+        delete user.connectionArray;
+
+        return {
+            success: true,
+            message: 'User retrieved successfully',
+            data: {
+                ...user,
+                connection,
+            },
+        };
     }
 };
 
