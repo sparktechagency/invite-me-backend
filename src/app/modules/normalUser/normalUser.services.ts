@@ -4,6 +4,7 @@ import { JwtPayload } from 'jsonwebtoken';
 import mongoose from 'mongoose';
 import cron from 'node-cron';
 import AppError from '../../error/appError';
+import { USER_ROLE } from '../user/user.constant';
 import { User } from '../user/user.model';
 import { INormalUser } from './normalUser.interface';
 import NormalUser from './normalUser.model';
@@ -656,16 +657,87 @@ const getAllUser = async (
     }
 };
 
-// get single user
-const getSingleUser = async (id: string) => {
-    const result = await NormalUser.findById(id)
-        .populate('hotel', 'name')
-        .populate('user', 'loginThough');
-    if (!result) {
-        throw new AppError(httpStatus.NOT_FOUND, 'User not found');
-    }
+const getSingleUser = async (userData: JwtPayload, id: string) => {
+    if (
+        userData.role == USER_ROLE.admin ||
+        userData.role == USER_ROLE.superAdmin
+    ) {
+        const result = await NormalUser.findById(id)
+            .populate('hotel', 'name')
+            .populate('user', 'loginThough');
+        if (!result) {
+            throw new AppError(httpStatus.NOT_FOUND, 'User not found');
+        }
 
-    return result;
+        return result;
+    } else {
+        const profileId = new mongoose.Types.ObjectId(userData.profileId);
+        const targetUserId = new mongoose.Types.ObjectId(id);
+
+        const result = await NormalUser.aggregate([
+            { $match: { _id: targetUserId } },
+            {
+                $lookup: {
+                    from: 'connections', // MongoDB collection name
+                    let: { userId: '$_id' },
+                    pipeline: [
+                        {
+                            $match: {
+                                $expr: {
+                                    $or: [
+                                        {
+                                            $and: [
+                                                { $eq: ['$sender', profileId] },
+                                                {
+                                                    $eq: [
+                                                        '$receiver',
+                                                        '$$userId',
+                                                    ],
+                                                },
+                                            ],
+                                        },
+                                        {
+                                            $and: [
+                                                {
+                                                    $eq: [
+                                                        '$receiver',
+                                                        profileId,
+                                                    ],
+                                                },
+                                                {
+                                                    $eq: [
+                                                        '$sender',
+                                                        '$$userId',
+                                                    ],
+                                                },
+                                            ],
+                                        },
+                                    ],
+                                },
+                            },
+                        },
+                        { $project: { status: 1, sender: 1, receiver: 1 } },
+                    ],
+                    as: 'connection',
+                },
+            },
+            {
+                $lookup: {
+                    from: 'hotels',
+                    localField: 'hotel',
+                    foreignField: '_id',
+                    as: 'hotel',
+                },
+            },
+            { $unwind: { path: '$hotel', preserveNullAndEmptyArrays: true } },
+        ]);
+
+        if (!result || result.length === 0) {
+            throw new AppError(httpStatus.NOT_FOUND, 'User not found');
+        }
+
+        return result[0];
+    }
 };
 
 // send connection request

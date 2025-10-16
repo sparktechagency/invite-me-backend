@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import httpStatus from 'http-status';
+import { getCloudFrontUrl } from '../../helper/mutler-s3-uploader';
 import catchAsync from '../../utilities/catchasync';
 import sendResponse from '../../utilities/sendResponse';
 import NormalUserServices from './normalUser.services';
-import { getCloudFrontUrl } from '../../helper/mutler-s3-uploader';
 
 const updateUserProfile = catchAsync(async (req, res) => {
     if (req.files?.pictures) {
@@ -39,7 +39,10 @@ const getAllUser = catchAsync(async (req, res) => {
 });
 
 const getSingleUser = catchAsync(async (req, res) => {
-    const result = await NormalUserServices.getSingleUser(req.params.id);
+    const result = await NormalUserServices.getSingleUser(
+        req.user,
+        req.params.id
+    );
     sendResponse(res, {
         statusCode: httpStatus.OK,
         success: true,
