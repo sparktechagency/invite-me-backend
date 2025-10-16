@@ -71,7 +71,7 @@ const getAllUser = async (
         if (hotelId) {
             matchStage.hotel = hotelId;
         }
-        if (query.previewsGuest && query.previewsGuest == 'true') {
+        if (query.previousGuest && query.previousGuest == 'true') {
             matchStage.isExpired = true;
         } else {
             matchStage.isExpired = false;
