@@ -855,38 +855,64 @@ const deleteUser = async (id: string) => {
 
 // Run every day at 12:00 AM
 cron.schedule('0 0 * * *', async () => {
+    console.log(
+        '[CRON] NormalUser cleanup started at',
+        new Date().toISOString()
+    );
+    const sessionStart = Date.now();
+
     try {
         const now = new Date();
 
-        // Find all normal users whose checkout date has expired
-        const expiredUsers = await NormalUser.find({
-            checkOutDate: { $lte: now },
-        });
+        // Step 1: Find all expired normal users (not yet marked expired)
+        const expiredUsers = await NormalUser.find(
+            { checkOutDate: { $lte: now }, isExpired: false },
+            { _id: 1, user: 1 } // projection — only get what we need
+        ).lean();
 
-        if (expiredUsers.length) {
-            for (const user of expiredUsers) {
-                // Delete associated User document
-                if (user.user) {
-                    await User.findByIdAndUpdate(user.user, {
-                        isExpired: true,
-                    });
-                }
-
-                // Delete NormalUser
-                // await NormalUser.findByIdAndDelete(user._id);
-                await Connection.deleteMany({
-                    $or: [{ sender: user._id }, { receiver: user._id }],
-                });
-                await Conversation.deleteMany({
-                    participants: user._id,
-                });
-            }
-            console.log(
-                `[CRON] Deleted ${expiredUsers.length} expired normal users.`
-            );
+        if (!expiredUsers.length) {
+            console.log('[CRON] No expired normal users found.');
+            return;
         }
+
+        const userIds = expiredUsers.map((u) => u.user).filter(Boolean);
+        const normalUserIds = expiredUsers.map((u) => u._id);
+
+        // Step 2: Mark all related users and normal users as expired (bulk update)
+        const [userUpdateRes, normalUserUpdateRes] = await Promise.all([
+            User.updateMany(
+                { _id: { $in: userIds } },
+                { $set: { isExpired: true } }
+            ),
+            NormalUser.updateMany(
+                { _id: { $in: normalUserIds } },
+                { $set: { isExpired: true } }
+            ),
+        ]);
+
+        // Step 3: Delete associated connections and conversations in parallel
+        const [connDeleteRes, convDeleteRes] = await Promise.all([
+            Connection.deleteMany({
+                $or: [
+                    { sender: { $in: normalUserIds } },
+                    { receiver: { $in: normalUserIds } },
+                ],
+            }),
+            Conversation.deleteMany({ participants: { $in: normalUserIds } }),
+        ]);
+
+        console.log(
+            `[CRON] Marked ${normalUserUpdateRes.modifiedCount} NormalUsers and ${userUpdateRes.modifiedCount} Users as expired.`
+        );
+        console.log(
+            `[CRON] Deleted ${connDeleteRes.deletedCount} connections and ${convDeleteRes.deletedCount} conversations.`
+        );
     } catch (error) {
         console.error('[CRON ERROR] NormalUser cleanup failed:', error);
+    } finally {
+        console.log(
+            `[CRON] Cleanup finished in ${(Date.now() - sessionStart) / 1000}s.`
+        );
     }
 });
 

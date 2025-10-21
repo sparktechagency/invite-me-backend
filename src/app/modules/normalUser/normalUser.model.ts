@@ -67,6 +67,10 @@ const NormalUserSchema = new Schema<INormalUser>(
             ref: 'Hotel',
             // required: true,
         },
+        isExpired: {
+            type: Boolean,
+            default: false,
+        },
     },
     {
         timestamps: true,
