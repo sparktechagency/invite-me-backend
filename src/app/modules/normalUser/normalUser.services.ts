@@ -4,6 +4,8 @@ import { JwtPayload } from 'jsonwebtoken';
 import mongoose from 'mongoose';
 import cron from 'node-cron';
 import AppError from '../../error/appError';
+import Connection from '../connection/connection.model';
+import Conversation from '../conversation/conversation.model';
 import { USER_ROLE } from '../user/user.constant';
 import { User } from '../user/user.model';
 import { INormalUser } from './normalUser.interface';
@@ -872,6 +874,12 @@ cron.schedule('0 0 * * *', async () => {
 
                 // Delete NormalUser
                 // await NormalUser.findByIdAndDelete(user._id);
+                await Connection.deleteMany({
+                    $or: [{ sender: user._id }, { receiver: user._id }],
+                });
+                await Conversation.deleteMany({
+                    participants: user._id,
+                });
             }
             console.log(
                 `[CRON] Deleted ${expiredUsers.length} expired normal users.`

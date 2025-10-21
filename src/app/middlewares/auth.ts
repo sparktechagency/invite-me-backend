@@ -1,12 +1,12 @@
 /* eslint-disable no-unused-vars */
 import { NextFunction, Request, Response } from 'express';
-import catchAsync from '../utilities/catchasync';
-import AppError from '../error/appError';
 import httpStatus from 'http-status';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import config from '../config';
+import AppError from '../error/appError';
 import { TUserRole } from '../modules/user/user.interface';
 import { User } from '../modules/user/user.model';
+import catchAsync from '../utilities/catchasync';
 
 // make costume interface
 
@@ -43,7 +43,7 @@ const auth = (...requiredRoles: TUserRole[]) => {
             const user = await User.findById(id);
             if (!user) {
                 throw new AppError(
-                    httpStatus.NOT_FOUND,
+                    httpStatus.UNAUTHORIZED,
                     'This user does not exist'
                 );
             }
