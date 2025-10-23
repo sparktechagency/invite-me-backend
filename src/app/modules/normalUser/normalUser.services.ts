@@ -627,8 +627,8 @@ const deleteUser = async (id: string) => {
     return reuslt;
 };
 
-// Run every day at 12:00 AM
-cron.schedule('0 0 * * *', async () => {
+// Run every 12 hour
+cron.schedule('0 */12 * * *', async () => {
     console.log(
         '[CRON] NormalUser cleanup started at',
         new Date().toISOString()

@@ -535,36 +535,6 @@ const loginWithOAuth = async (
             [`${provider}Id`]: id,
             isExpired: false,
         });
-
-        // if (!user) {
-        //     user = new User({
-        //         email,
-        //         [`${provider}Id`]: id,
-        //         name,
-        //         profilePic: picture,
-        //         role,
-        //         isVerified: true,
-        //     });
-
-        //     await user.save();
-        //     const nameParts = name.split(' ');
-        //     const firstName = nameParts[0];
-        //     const lastName = nameParts[1] || '';
-
-        //     const result = await NormalUser.create({
-        //         firstName,
-        //         lastName,
-        //         user: user._id,
-        //         email,
-        //         profile_image: picture,
-        //     });
-
-        //     user = await User.findByIdAndUpdate(
-        //         user._id,
-        //         { profileId: result._id },
-        //         { new: true, runValidators: true }
-        //     );
-        // }
         if (!user) {
             const session = await mongoose.startSession();
             session.startTransaction();
@@ -643,9 +613,6 @@ const loginWithOAuth = async (
                 await user.save();
             }
         }
-
-        // TODO: need to delete
-        await NotificationSetting.create({ user: user?.profileId });
         if (!user) {
             throw new AppError(404, 'User not found after creation');
         }
