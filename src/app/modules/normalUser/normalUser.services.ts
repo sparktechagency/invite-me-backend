@@ -32,7 +32,7 @@ const updateUserProfile = async (id: string, payload: Partial<INormalUser>) => {
             (url) => !payload?.deletedPictures?.includes(url)
         );
     }
-
+    payload.profile_image = payload.pictures[0];
     const result = await NormalUser.findByIdAndUpdate(id, payload, {
         new: true,
         runValidators: true,
